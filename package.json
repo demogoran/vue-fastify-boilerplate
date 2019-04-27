@@ -10,7 +10,7 @@
     "serv": "nodemon --exec babel-node app.js",
     "dev": "concurrently \"npm run pack\" \"npm run serv\""
   },
-  "start": "npm run dev",
+  "start": "npm run serv",
   "author": "",
   "license": "ISC",
   "dependencies": {

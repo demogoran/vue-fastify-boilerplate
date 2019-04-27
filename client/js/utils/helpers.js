@@ -1,4 +1,4 @@
-import {Console} from './console';
+import { Console } from './console';
 
 export const fetchJSON = async (url, method = "GET", body, o = {}) => {
     const options = Object.assign({}, o);
@@ -36,16 +36,11 @@ export const fetchJSON = async (url, method = "GET", body, o = {}) => {
 export const handleSave = fieldsToLoad => {
     const watch = {};
     fieldsToLoad.forEach(key => {
-        watch[key] = (newObj, oldObj) => {
-            Console.log(`${key} changed`, oldObj, newObj);
-            localStorage.setItem(key, JSON.stringify(newObj));
-        };
+        watch[key] = (newObj) => localStorage.setItem(key, JSON.stringify(newObj));
     });
-    Console.log(watch);
     return {
         watch,
         mounted() {
-            Console.log("App mounted for localStorage!");
             fieldsToLoad.forEach(key => {
                 try {
                     const storageField = localStorage.getItem(key);
