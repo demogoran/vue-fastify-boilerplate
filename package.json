@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "deploy": "git add . && git commit -m \"deploy\" && git push deploy \"$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)\"",
+    "deploy": "git add . && git commit -m \"deploy\" && git push deploy dev",
     "build": "webpack --mode production",
     "pack": "webpack --mode development",
     "serv": "nodemon --exec babel-node app.js",
