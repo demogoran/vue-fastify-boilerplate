@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "build": "webpack --mode production",
     "pack": "webpack --mode development",
     "serv": "nodemon --exec babel-node app.js",
     "dev": "concurrently \"npm run pack\" \"npm run serv\""
