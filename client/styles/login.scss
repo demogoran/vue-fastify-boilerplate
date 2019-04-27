@@ -1,0 +1,25 @@
+html,body{
+    height: 100%;
+}
+#app{
+    height: 100%;
+}
+.loginContainer{
+    max-width: 500px;
+    position: relative;
+    height: 100%;
+
+    .actionButton{
+        margin-top: 10px;
+        margin-right: 10px;
+    }
+    .fixedPrepend .input-group-text{
+        width: 100px;
+    }
+    .customizedAlert{
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+    }
+}

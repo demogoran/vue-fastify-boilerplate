@@ -1,0 +1,43 @@
+import Fastify from 'fastify';
+import { staticServe } from 'fastify-auto-push';
+
+import fastifyJWT from 'fastify-jwt';
+import dotenv from 'dotenv';
+dotenv.config({path: '.env-serv'});
+
+import path from 'path';
+import fs from 'fs';
+
+import { ControllersLoader } from './server/libs/ControllersLoader';
+
+
+const fastify = Fastify({
+    http2: true,
+    https: {
+        allowHTTP1: true,
+        key: fs.readFileSync('https/privkey.pem'),
+        cert: fs.readFileSync('https/cert.pem'),
+        ca: fs.readFileSync('https/chain.pem')
+    }
+});
+fastify.register(staticServe, {
+    root: path.join(__dirname, 'client'),
+    prefix: '/client/',
+});
+fastify.register(fastifyJWT, {
+    sign: {
+        expiresIn: "12h",
+    },
+    verify: {
+        maxAge: "12h",
+    },
+    secret: ';lkjunH(*&GY@UHU@J#HIKJBH(&&!FVG#OBNIOMI!@KJLH#LY!@*)H#)NOI@HL#H!@L#GB!OII@HG#G'
+});
+fastify.register(ControllersLoader);
+
+
+
+fastify.listen(process.env.PORT || 3001, '0.0.0.0', (err, address) => {
+    if (err) throw err;
+    fastify.log.info(`server listening on ${address}`)
+});

@@ -1,0 +1,14 @@
+.playerTabs{
+    width: 100%;
+    .playerRow{
+        display: flex;
+        flex-direction: row !important;
+        
+        .playerDescription{
+            flex: 1 0;
+        }
+        .playerThumbImage{
+            flex: 0;
+        }
+    }
+}
