@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "deploy": "git add . && git commit -m \"deploy\" && git push deploy dev",
-    "build": "webpack --mode production",
-    "pack": "webpack --mode development",
+    "build": "webpack --mode production --config webpack.prod.config.js --optimize-minimize --define process.env.NODE_ENV=\"'production'\"",
+    "pack": "webpack --mode development --config webpack.config.js",
     "serv": "nodemon --exec babel-node app.js",
     "dev": "concurrently \"npm run pack\" \"npm run serv\""
   },
@@ -55,6 +55,7 @@
     "postcss-loader": "^3.0.0",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
+    "terser-webpack-plugin": "^1.2.3",
     "uglifyjs-webpack-plugin": "^2.1.2",
     "vue-loader": "^15.7.0",
     "vue-template-compiler": "^2.6.10",
