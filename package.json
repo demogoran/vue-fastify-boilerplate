@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "deploy": "git add . && git commit -m \"deploy\" && git push origin dev && git push deploy dev",
+    "deploy": "git add . && git commit -m \"deploy\" && git push -u origin dev && git push deploy dev",
     "build": "webpack --mode production --config webpack.prod.config.js --optimize-minimize --define process.env.NODE_ENV=\"'production'\"",
     "pack": "webpack --mode development --config webpack.config.js",
     "serv": "nodemon --exec babel-node app.js",
