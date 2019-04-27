@@ -44,10 +44,16 @@ fastify.listen(process.env.PORT || 3001, '0.0.0.0', (err, address) => {
 
 
 /*
+set GIT_SSH=
+git push deploy dev
+
+
+
 https://medium.com/@francoisromain/vps-deploy-with-git-fea605f1303b
-git remote add deploy ssh://gitdeploy@109.74.199.163/srv/git/vue-fastify-boilerplate.git/
+git remote set-url deploy ssh://gitdeploy@109.74.199.163/srv/git/vue-fastify-boilerplate.git/
+git remote add deployRoot ssh://root@109.74.199.163/srv/git/vue-fastify-boilerplate.git/
 
-
+usermod -s /bin/bash gitdeploy
 adduser gitdeploy
 mkdir -p /srv/tmp/
 chgrp -R gitdeploy /srv/tmp/
