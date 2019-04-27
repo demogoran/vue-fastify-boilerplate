@@ -41,3 +41,18 @@ fastify.listen(process.env.PORT || 3001, '0.0.0.0', (err, address) => {
     if (err) throw err;
     fastify.log.info(`server listening on ${address}`)
 });
+
+
+/*
+https://medium.com/@francoisromain/vps-deploy-with-git-fea605f1303b
+git remote add deploy ssh://gitdeploy@109.74.199.163/srv/git/vue-fastify-boilerplate.git/
+
+
+adduser gitdeploy
+mkdir -p /srv/tmp/
+chgrp -R gitdeploy /srv/tmp/
+chmod g+w /srv/tmp/
+mkdir -p /srv/www/
+chgrp -R gitdeploy /srv/www/
+chmod g+w /srv/www/
+*/
