@@ -47,6 +47,7 @@ fastify.listen(process.env.PORT || 3001, '0.0.0.0', (err, address) => {
 set GIT_SSH=
 git push deploy dev
 
+
 https://medium.com/@francoisromain/vps-deploy-with-git-fea605f1303b
 git remote set-url deploy ssh://root@109.74.199.163/srv/git/vue-fastify-boilerplate.git/
 
