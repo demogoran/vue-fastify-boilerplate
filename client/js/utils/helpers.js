@@ -1,5 +1,3 @@
-import { Console } from './console';
-
 export const fetchJSON = async (url, method = "GET", body, o = {}) => {
     const options = Object.assign({}, o);
     const jwt = localStorage.getItem('jwtToken');
@@ -46,7 +44,7 @@ export const handleSave = fieldsToLoad => {
                     const storageField = localStorage.getItem(key);
                     if (storageField) this[key] = JSON.parse(storageField);
                 } catch (ex) {
-                    Console.log("Extracting error", ex);
+                    console.log("Extracting error", ex);
                 }
             });
         }

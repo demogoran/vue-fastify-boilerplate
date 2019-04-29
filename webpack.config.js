@@ -1,8 +1,9 @@
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const autoprefixer = require('autoprefixer');
 const Dotenv = require('dotenv-webpack');
+const path = require('path');
 
 
 const config = {
@@ -17,16 +18,23 @@ const config = {
     rules: [
       {
         test: /\.(js)$/,
-        exclude: /node_modules/,
+        include: [
+          path.resolve(__dirname, "client/js"),
+          path.resolve(__dirname, "client/templates"),
+        ],
         use: {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env']
           }
-        },
+        }
       },
       {
         test: /\.scss$/,
+        include: [
+          path.resolve(__dirname, "client/styles"),
+          path.resolve(__dirname, "client/templates"),
+        ],
         use: [
           'style-loader',
           { loader: 'css-loader' },
@@ -44,6 +52,10 @@ const config = {
       },
       {
         test: /\.vue$/,
+        include: [
+          path.resolve(__dirname, "client/js"),
+          path.resolve(__dirname, "client/templates"),
+        ],
         loader: 'vue-loader'
       }
     ],
@@ -62,10 +74,13 @@ const config = {
     new VueLoaderPlugin(),
   ],
   optimization: {
-    minimize: true,
-    minimizer: [new UglifyJsPlugin({
-      include: /\.min\.js$/
-    })]
+    minimizer: [
+      new TerserPlugin({
+        cache: true,
+        parallel: true,
+        sourceMap: true,
+      }),
+    ],
   }
 };
 

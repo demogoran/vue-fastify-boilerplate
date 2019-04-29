@@ -2,11 +2,8 @@ import querystring from 'querystring';
 import request from 'request-promise';
 import cheerio from 'cheerio';
 
-import {Console} from './Console';
-
-
 export class SoundCloudAPI {
-    static async searchAudio(str, limit=200) {
+    static async searchAudio(str, limit = 200) {
         let url = `https://api-v2.soundcloud.com/search?q=${encodeURIComponent(str)}&client_id=1gZT1mMPZn4vbs2p7aDdnTTEC8r3wNWa&limit=${limit}`;
         return await request(url);
     }
@@ -15,21 +12,43 @@ export class SoundCloudAPI {
         return await request(url);
     }
     static async getTracksCompact(ids) {
-        let data = await request(`https://api-v2.soundcloud.com/tracks?ids=${ids}&client_id=1gZT1mMPZn4vbs2p7aDdnTTEC8r3wNWa&app_version=1543583184&app_locale=en`);
-        let json = JSON.parse(data);
-        
-        return json.map(x=>{
-            const itemURL = x.media?.transcodings?.find(y=>y?.format?.protocol==='progressive')?.url;
-            return {
-                url: `${itemURL}?client_id=1gZT1mMPZn4vbs2p7aDdnTTEC8r3wNWa&app_version=1543583184&app_locale=en`,
-                name: x.title
-            };
+        const json = await request(`https://api-v2.soundcloud.com/tracks?ids=${ids}&client_id=1gZT1mMPZn4vbs2p7aDdnTTEC8r3wNWa&app_version=1543583184&app_locale=en`);
+        const data = JSON.parse(json);
+
+        const promises = data.map(async x => {
+            try {
+                let itemURL = x.media ?.transcodings ?.find(y => y ?.format ?.protocol === 'progressive') ?.url;
+                itemURL = `${itemURL}?client_id=1gZT1mMPZn4vbs2p7aDdnTTEC8r3wNWa&app_version=1543583184&app_locale=en`
+
+                const newJson = await request(itemURL);
+                return {
+                    url: JSON.parse(newJson).url,
+                    name: x.title
+                };
+            }
+            catch (ex) {
+                console.log(ex);
+                return null;
+            }
         });
+        return await Promise.all(promises);
     }
     static async getTracks(ids) {
-        let data = await request(`https://api-v2.soundcloud.com/tracks?ids=${ids}&client_id=1gZT1mMPZn4vbs2p7aDdnTTEC8r3wNWa&app_version=1543583184&app_locale=en`);
-        let json = JSON.parse(data);
-        return json;
+        const json = await request(`https://api-v2.soundcloud.com/tracks?ids=${ids}&client_id=1gZT1mMPZn4vbs2p7aDdnTTEC8r3wNWa&app_version=1543583184&app_locale=en`);
+        const data = JSON.parse(json);
+        const awaits = data.map(async x => {
+            try {
+                const newUrl = await request(x.url);
+                return {
+                    name: x.name,
+                    url: JSON.parse(newUrl).url
+                }
+            }
+            catch (ex) {
+                return null;
+            }
+        });
+        return await Promise.all(awaits);
     }
     static async getPlaylist(str) {
         //https://soundcloud.com/user-614716602
@@ -77,7 +96,7 @@ export class SoundCloudAPI {
             let promises = JSON.parse(result).collection.filter(x => x.kind === 'track').map(async x => {
                 let data = await request(`https://api-v2.soundcloud.com/media/soundcloud:tracks:${x.id}/legacy-mp3/stream/hls?client_id=1gZT1mMPZn4vbs2p7aDdnTTEC8r3wNWa`);
                 let json = JSON.parse(data);
-                Console.log(json);
+                console.log(json);
                 return {
                     url: json.url,
                     name: x.title
@@ -91,12 +110,12 @@ export class SoundCloudAPI {
                 const child = require('child_process').exec(command);
                 child.stdout.pipe(process.stdout);
                 child.on('exit', function () {
-                    Console.log('Done:', x.name);
+                    console.log('Done:', x.name);
                 });
             });
         }
         catch (ex) {
-            Console.log("Got error:", ex);
+            console.log("Got error:", ex);
             return [];
         }
     }

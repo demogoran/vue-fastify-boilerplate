@@ -6,7 +6,7 @@ import LOCALES from '../libs/Localization';
 
 
 class UserController extends BasicController {
-    constructor(fastify, options) {
+    constructor(fastify) {
         super();
         this.allowedPathes = {
             "UserController.Login": true,

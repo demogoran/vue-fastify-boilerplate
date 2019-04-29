@@ -1,9 +1,10 @@
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const Dotenv = require('dotenv-webpack');
+const path = require('path');
 
 
 const config = {
@@ -18,16 +19,29 @@ const config = {
     rules: [
       {
         test: /\.(js)$/,
-        exclude: /node_modules/,
+        exclude: [          
+          path.resolve(__dirname, "node_modules"),
+        ],
+        include: [
+          path.resolve(__dirname, "client/js"),
+          path.resolve(__dirname, "client/templates"),
+        ],
         use: {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env']
           }
-        },
+        }
       },
       {
         test: /\.scss$/,
+        exclude: [          
+          path.resolve(__dirname, "node_modules"),
+        ],
+        include: [
+          path.resolve(__dirname, "client/styles"),
+          path.resolve(__dirname, "client/templates"),
+        ],
         use: [
           'style-loader',
           { loader: 'css-loader' },
@@ -45,6 +59,13 @@ const config = {
       },
       {
         test: /\.vue$/,
+        exclude: [          
+          path.resolve(__dirname, "node_modules"),
+        ],
+        include: [
+          path.resolve(__dirname, "client/js"),
+          path.resolve(__dirname, "client/templates"),
+        ],
         loader: 'vue-loader'
       }
     ],
@@ -60,6 +81,7 @@ const config = {
     new CleanWebpackPlugin(),
     new Dotenv(),
     new VueLoaderPlugin(),
+    new BundleAnalyzerPlugin()
   ],
   optimization: {
     minimizer: [

@@ -17,10 +17,8 @@ class MusicController extends BasicController {
 
     async TrackInfo(request) {
         const data = request.body;
-        if (!data.urls) {
-            throw LOCALES.AUDIO_MISSED_DATA;
-        }
-        const result = await SoundCloudAPI.getTracksCompact(data.urls);
+        if (!data.ids) throw LOCALES.AUDIO_MISSED_DATA;
+        const result = await SoundCloudAPI.getTracksCompact(data.ids);
         return { result };
     }
 

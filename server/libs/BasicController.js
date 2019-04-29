@@ -1,5 +1,4 @@
 import LOCALES from './Localization';
-import {Console} from './Console';
 
 class BasicController {
     constructor() {
@@ -40,7 +39,7 @@ class BasicController {
                             error: true
                         };
                         if(process.env.DEBUG_ENABLED){
-                            Console.log("Method error: ", ex);
+                            console.log("Method error: ", ex);
                             errorResponse.errorMessage = errorMessage; 
                         }
                         response.code(500);

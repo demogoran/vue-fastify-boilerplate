@@ -4,7 +4,75 @@
 
 
 <template>
-  <b-container class="playerContainer">
+  <section>
+    <div class="block">
+      <audio :src="currentTrack" controls="controls" autoplay></audio>
+    </div>
+    <b-field>
+      <b-input type="search" icon="magnify" v-model="searchStr"></b-input>
+      <p class="control">
+        <button class="button is-primary" variant="info" @click="search()">{{ $t('Search') }}</button>
+      </p>
+    </b-field>
+    <b-tabs v-model="activeTab">
+      <b-tab-item
+        v-for="(contentTabValue, contentTabKey) in audioInfo"
+        v-bind:key="contentTabKey"
+        :label="contentTabKey"
+        :class="{active: Object.keys(audioInfo).indexOf(contentTabKey)===0}"
+      >
+        <b-table
+          :data="contentTabValue"
+          ref="table"
+          paginated
+          per-page="5"
+          :opened-detailed="defaultOpenedDetails"
+          detailed
+          detail-key="id"
+          :show-detail-icon="true"
+          :selected.sync="selected"
+          selectable
+          @select="(item)=>{playCurrent(item, contentTabKey);}"
+        >
+          <template 
+            slot-scope="props" 
+            @click="toggle(props.row)">
+            <b-table-column field="id" label="ID" width="40" sortable numeric>{{ props.row.id }}</b-table-column>
+            <b-table-column field="title" label="Title" sortable>{{ props.row.title }}</b-table-column>
+            <b-table-column field="user.username" label="User" sortable>
+              {{
+                (props.row.user||{}).username||''
+              }}
+            </b-table-column>
+          </template>
+
+          <template slot="detail" slot-scope="props">
+            <article class="media">
+              <figure class="media-left">
+                <p class="image is-64x64">
+                  <img
+                    :src="props.row.artwork_url"
+                    class="playerThumbImage"
+                    @error="imgFallback($event)"
+                  >
+                </p>
+              </figure>
+              <div class="media-content">
+                <div class="content">
+                  <p>
+                    <strong>{{ (props.row.user||{}).username || '' }}</strong>
+                    <small>@{{ props.row.id || '' }}</small>
+                    <div class="playControls"></div>
+                  </p>
+                </div>
+              </div>
+            </article>
+          </template>
+        </b-table>
+      </b-tab-item>
+    </b-tabs>
+  </section>
+  <!-- <b-container class="playerContainer">
     <b-row>
       <b-col>
         <h3>Player</h3>
@@ -19,7 +87,7 @@
     </b-row>
 
     <b-row>
-      <audio :src="currentTrack" controls="controls"></audio>
+      <audio :src="currentTrack" controls="controls" autoplay></audio>
     </b-row>
 
     <b-row>
@@ -33,10 +101,10 @@
           <b-list-group>
             <b-list-group-item
               :href="item.permalink_url"
-              :class="`flex-column align-items-start playerRow ${index===0?'active': ''}`"
+              :class="`flex-column align-items-start playerRow ${selectedIndexes[contentTabKey]===index?'active': ''}`"
               v-for="(item, index) in contentTabValue"
               v-bind:key="index"
-              @click.prevent="playCurrent(item.permalink_url)"
+              @click.prevent="playCurrent(item.id, contentTabKey, index)"
             >
               <b-img
                 thumbnail
@@ -54,15 +122,7 @@
         </b-tab>
       </b-tabs>
     </b-row>
-
-    <b-alert
-      :show="typeof alertContent!=='undefined'&&alertContent.length>0"
-      variant="danger"
-      class="customizedAlert"
-      @dismissed="alertContent=''"
-      dismissible
-    >{{alertContent}}</b-alert>
-  </b-container>
+  </b-container>-->
 </template>
 
 
@@ -76,20 +136,31 @@ const sortByImage = (a, b) => {
 };
 
 export default {
-  mixins: [handleSave(["audioInfo", "searchStr"])],
+  mixins: [handleSave(["audioInfo", "searchStr", "cachedUrls"])],
   data() {
     return {
-      alertContent: "",
       searchStr: "Skillet",
+      defaultOpenedDetails: [1],
       audioInfo: {
         Tracks: [],
         People: [],
         Playlists: []
       },
-      currentTrack: null
+      selectedIndexes: {
+        Tracks: 0,
+        People: 0,
+        Playlists: 0
+      },
+      cachedUrls: {},
+      activeTab: 0,
+      currentTrack: null,
+      selected: null
     };
   },
   methods: {
+    toggle(row) {
+      this.$refs.table.toggleDetails(row);
+    },
     async search() {
       const response = await fetchJSON("/api/music/search", "post", {
         q: this.searchStr
@@ -104,11 +175,19 @@ export default {
         People: kinds.user.sort(sortByImage),
         Playlists: kinds.playlist.sort(sortByImage)
       };
-      console.log(this.audioInfo);
     },
-    playCurrent(currentUrl) {
-      if (!currentUrl) return;
-      this.currentTrack = currentUrl;
+    async playCurrent(item, contentTabKey) {
+      const id = item.id;
+      if (!id) return;
+      try {
+        const response = await fetchJSON("/api/music/trackinfo", "post", {
+          ids: [id]
+        });
+        this.currentTrack = response.result[0].url;
+        this.selected = item;
+      } catch (ex) {
+        console.log(ex);
+      }
     },
     imgFallback(event) {
       event.target.src = "img/notfound.jfif";

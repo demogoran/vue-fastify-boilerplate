@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import BootstrapVue from 'bootstrap-vue';
+import Buefy from 'buefy';
 import VueRouter from 'vue-router';
 import VuexI18n from 'vuex-i18n';
 import Translations from './localizations/english.locale.js';
@@ -37,7 +37,7 @@ router.beforeEach((to, from, next) => {
 }) 
 
 
-Vue.use(BootstrapVue);
+Vue.use(Buefy);
 Vue.use(Vuex);
 Vue.use(VueRouter);
 
