@@ -1,4 +1,3 @@
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -80,8 +79,7 @@ const config = {
   plugins: [
     new CleanWebpackPlugin(),
     new Dotenv(),
-    new VueLoaderPlugin(),
-    new BundleAnalyzerPlugin()
+    new VueLoaderPlugin()
   ],
   optimization: {
     minimizer: [
