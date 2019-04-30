@@ -8,7 +8,7 @@
 
 
 <script>
-import { mapState } from "Vuex";
+import { mapState } from "vuex";
 import { handleSave } from "../js/utils/helpers.js";
 const sortByImage = (a, b) => {
   if (!a.artwork_url) return 1;
