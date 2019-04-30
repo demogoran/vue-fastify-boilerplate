@@ -61,6 +61,11 @@ Vue.use(VuexI18n.plugin, store);
 Vue.i18n.add('en', Translations);
 Vue.i18n.set('en');
 
+store.subscribe((mutation, state) => {
+	// Store the state object as a JSON string
+	localStorage.setItem('playerStore', JSON.stringify(state));
+});
+
 
 new Vue({
   store,
@@ -74,5 +79,8 @@ new Vue({
     currentRoute: function(){
       return this.$route.name;
     }
-  }
+  },
+  beforeCreate() {
+		this.$store.commit('initialiseStore');
+	}
 }).$mount('#app');
