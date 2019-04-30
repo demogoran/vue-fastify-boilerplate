@@ -18,9 +18,6 @@ const config = {
     rules: [
       {
         test: /\.(js)$/,
-        exclude: [          
-          path.resolve(__dirname, "node_modules"),
-        ],
         include: [
           path.resolve(__dirname, "client/js"),
           path.resolve(__dirname, "client/templates"),
@@ -34,9 +31,6 @@ const config = {
       },
       {
         test: /\.scss$/,
-        exclude: [          
-          path.resolve(__dirname, "node_modules"),
-        ],
         include: [
           path.resolve(__dirname, "client/styles"),
           path.resolve(__dirname, "client/templates"),
@@ -58,9 +52,6 @@ const config = {
       },
       {
         test: /\.vue$/,
-        exclude: [          
-          path.resolve(__dirname, "node_modules"),
-        ],
         include: [
           path.resolve(__dirname, "client/js"),
           path.resolve(__dirname, "client/templates"),
