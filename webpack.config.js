@@ -10,7 +10,7 @@ const config = {
   entry: './client/js/index.js',
   output: {
     filename: '[name].js',
-    publicPath: 'dist/',
+    publicPath: '/client/dist/',
     chunkFilename: '[name].bundle.js',
     path: `${__dirname}/client/dist`,
   },

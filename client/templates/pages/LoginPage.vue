@@ -1,5 +1,5 @@
 <style lang="scss">
-@import "../styles/login.scss";
+@import "../../styles/login.scss";
 </style>
 
 
@@ -37,7 +37,7 @@
 
 
 <script>
-import { fetchJSON, handleSave } from "../js/utils/helpers.js";
+import { fetchJSON, handleSave } from "../../js/utils/helpers.js";
 export default {
   mixins: [handleSave(["login"])],
   data() {

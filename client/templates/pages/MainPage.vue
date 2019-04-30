@@ -1,5 +1,5 @@
 <style lang="scss">
-@import "../styles/main.scss";
+@import "../../styles/main.scss";
 </style>
 
 
@@ -25,7 +25,7 @@
           :data="contentTabValue"
           ref="table"
           paginated
-          per-page="5"
+          per-page="30"
           :opened-detailed="defaultOpenedDetails"
           detailed
           detail-key="id"
@@ -37,7 +37,9 @@
           <template 
             slot-scope="props" 
             @click="toggle(props.row)">
-            <b-table-column field="id" label="ID" width="40" sortable numeric>{{ props.row.id }}</b-table-column>
+            <b-table-column field="id" label="ID" width="40" sortable numeric>
+              <a target="_blank" :href="props.row.permalink_url">{{ props.row.id }}</a>
+            </b-table-column>
             <b-table-column field="title" label="Title" sortable>{{ props.row.title }}</b-table-column>
             <b-table-column field="user.username" label="User" sortable>
               {{
@@ -71,6 +73,8 @@
         </b-table>
       </b-tab-item>
     </b-tabs>
+
+    <a href="test">Test</a>
   </section>
   <!-- <b-container class="playerContainer">
     <b-row>
@@ -127,7 +131,7 @@
 
 
 <script>
-import { fetchJSON, handleSave } from "../js/utils/helpers.js";
+import { fetchJSON, handleSave } from "../../js/utils/helpers.js";
 
 const sortByImage = (a, b) => {
   if (!a.artwork_url) return 1;
@@ -136,7 +140,7 @@ const sortByImage = (a, b) => {
 };
 
 export default {
-  mixins: [handleSave(["audioInfo", "searchStr", "cachedUrls"])],
+  mixins: [handleSave(["audioInfo", "searchStr", "cachedUrls"], 'mainpage')],
   data() {
     return {
       searchStr: "Skillet",
@@ -184,6 +188,7 @@ export default {
           ids: [id]
         });
         this.currentTrack = response.result[0].url;
+        this.$store.dispatch('callCurrentTrack', this.currentTrack);
         this.selected = item;
       } catch (ex) {
         console.log(ex);

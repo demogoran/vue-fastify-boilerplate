@@ -3,7 +3,7 @@ import { staticServe } from 'fastify-auto-push';
 
 import fastifyJWT from 'fastify-jwt';
 import dotenv from 'dotenv';
-dotenv.config({path: '.env-serv'});
+dotenv.config({ path: '.env-serv' });
 
 import path from 'path';
 import fs from 'fs';
@@ -20,6 +20,7 @@ const fastify = Fastify({
         ca: fs.readFileSync('https/chain.pem')
     }
 });
+
 fastify.register(staticServe, {
     root: path.join(__dirname, 'client'),
     prefix: '/client/',
@@ -35,13 +36,14 @@ fastify.register(fastifyJWT, {
 });
 fastify.register(ControllersLoader);
 
-
-
 fastify.listen(process.env.PORT || 3001, '0.0.0.0', (err, address) => {
     if (err) throw err;
     fastify.log.info(`server listening on ${address}`)
 });
 
+fastify.get('*', function (request, reply) {
+    reply.sendFile('index.html');
+});
 
 /*
 set GIT_SSH=

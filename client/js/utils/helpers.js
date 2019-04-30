@@ -31,17 +31,18 @@ export const fetchJSON = async (url, method = "GET", body, o = {}) => {
         });
 }
 
-export const handleSave = fieldsToLoad => {
+export const handleSave = (fieldsToLoad, prefix='') => {
     const watch = {};
     fieldsToLoad.forEach(key => {
-        watch[key] = (newObj) => localStorage.setItem(key, JSON.stringify(newObj));
+        watch[key] = (newObj) =>
+            localStorage.setItem(`${prefix}_${key}`, JSON.stringify(newObj));
     });
     return {
         watch,
         mounted() {
             fieldsToLoad.forEach(key => {
                 try {
-                    const storageField = localStorage.getItem(key);
+                    const storageField = localStorage.getItem(`${prefix}_${key}`);
                     if (storageField) this[key] = JSON.parse(storageField);
                 } catch (ex) {
                     console.log("Extracting error", ex);
