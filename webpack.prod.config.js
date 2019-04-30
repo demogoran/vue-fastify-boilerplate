@@ -66,6 +66,7 @@ const config = {
       'vue$': 'vue/dist/vue.esm.js' // Use the full build
     }
   },
+  devtool: 'source-map',
   watch: false,
   plugins: [
     new CleanWebpackPlugin(),
