@@ -35,7 +35,7 @@ const router = new VueRouter({
   ]
 });
 
-Vue.component('playerComponent', () => import('../templates/PlayerComponent.vue'));
+Vue.component('playerComponent', () => import('../templates/components/PlayerComponent.vue'));
 
 router.beforeEach((to, from, next) => {
   let jwtToken = localStorage.getItem('jwtToken');

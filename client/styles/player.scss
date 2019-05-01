@@ -1,0 +1,267 @@
+// Variables
+// =========
+
+// Colors
+// ------
+$color__white: #fff;
+$color__black: #3f3d34;
+$color__gray: #7f7c6b;
+$color__gray--dark: #4a473c;
+$color__gray--light: #565252;
+$color__yellow: #f9b94e;
+$color__orange: #f9774e;
+$color__beige: #ddd8c8;
+
+// Font sizes
+// -------
+$font-size: 14;
+$font-size--alpha: 1.95;
+$font-size--beta: 1.5;
+
+@mixin font-size($size) {
+    font-size: #{$size * $font-size}px;
+    font-size: #{$size}rem;
+    line-height: 1em;
+    margin: 0 0 #{$size * $font-size / 2}px;
+    margin: 0 0 #{$size / 2}rem;
+}
+
+// Widths
+// ------
+$width--main: 75em;
+$width--player: 33em;
+$width--playlist: $width--main - $width--player;
+
+// Spacing
+// -------
+$spacing: 2rem;
+$spacing--large: 3rem;
+$spacing--small: 1rem;
+
+
+// Base
+// ====
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: #{$font-size}px;
+    font-family: Nunito, arial, sans-serif;
+    font-weight: 400;
+    min-height: 100%;
+}
+
+// Slider
+// ------
+
+$slider-height: 3px;
+$slider__thumb-height: 20px;
+$slider__thumb-width: 6px;
+
+.slider {
+    line-height: 1em;
+    overflow: hidden;
+    padding: 1.5px 0;
+
+    [type=range] {
+        appearance: none;
+        background: $color__gray--light;
+        height: $slider-height;
+        position: relative;
+        width: 100%;
+
+        &:focus {
+            outline: none;
+        }
+
+        &::-webkit-slider-thumb {
+            appearance: none;
+            background-color: $color__black;
+            border-radius: 99px;
+            cursor: pointer;
+            height: $slider__thumb-height;
+            position: relative;
+            transition: transform .2s;
+            width: $slider__thumb-width;
+
+            &:focus,
+            &:active {
+                transform: scale(1.1);
+            }
+
+            &:after {
+                background: $color__orange;
+                bottom: 0;
+                content: '';
+                display: block;
+                height: $slider-height;
+                margin-top: 0 - ($slider-height / 2);
+                pointer-events: none;
+                position: absolute;
+                right: $slider__thumb-width;
+                top: 50%;
+                width: 999px;
+            }
+        }
+    }
+
+    &--volume {
+        [type=range] {
+            &::-webkit-slider-thumb {
+                background-color: $color__white;
+                border: 3px solid $color__orange;
+                width: $slider__thumb-height;
+
+                &:after {
+                    right: $slider__thumb-height - 6;
+                }
+            }
+        }
+    }
+}
+
+// Icon
+// ----
+.icon {
+    fill: currentcolor;
+    height: 100%;
+    width: 100%;
+
+    &--inline {
+        display: inline-block;
+        height: 1em;
+        width: 1em;
+    }
+}
+
+// UI
+// ====
+
+// Player
+// ------
+.player {
+    background: $color__beige;
+    text-align: center;
+    width: 100%;
+    padding-bottom: 10px;
+
+
+    // Control
+    // -------
+    .control {
+        cursor: pointer;
+        margin: 0;
+        padding: $spacing--small;
+        transition: opacity .4s, color .4s;
+        max-width: 60px;
+
+        &:hover,
+        &:focus {
+            opacity: .8;
+        }
+
+        &:active {
+            color: $color__orange;
+            transition: none;
+        }
+
+        &--small {
+            transform: scale(.4);
+        }
+
+        &--dimmed {
+            opacity: .6;
+        }
+
+        &--outlined {
+            border: 2px solid $color__gray--light;
+            border-radius: 100%;
+        }
+
+        &--active {
+            color: $color__orange;
+        }
+    }
+
+
+    /* @media (min-width: $width--player) {
+        width: percentage($width--player / $width--main);
+    } */
+
+    &__title {
+        @include font-size($font-size--alpha);
+    }
+
+    &__sub-title {
+        @include font-size($font-size--beta);
+
+        color: $color__gray;
+        font-weight: 400;
+    }
+
+    &__cover {
+        display: block;
+        width: 100%;
+    }
+
+    &__rowwrap{
+        display: flex;
+        justify-content: space-between;
+        padding-right: 30px;
+    }
+
+    &__timer {
+        background: $color__beige;
+        display: flex;
+        justify-content: space-between;
+        padding: $spacing--small;
+        padding: 1rem 60px;
+
+        &__elapsed,
+        &__total {
+            font-weight: bold;
+        }
+    }
+
+    &__progress-bar {
+        margin-top: 0 - $spacing--small;
+        padding: 7px 60px;
+    }
+
+    &__time{
+        flex: 4;
+    }
+
+    &__controls {
+        display: flex;
+        list-style: none;
+        padding: $spacing--small $spacing;
+        flex: 2;
+    }
+
+    &__volume {
+        display: flex;
+        padding: $spacing;
+        width: 50%;
+        flex: 1;
+
+        &__icon {
+            width: $spacing;
+            height: $spacing;
+            margin-right: $spacing--small;
+        }
+
+        &__slider {
+            width: 100%;
+        }
+    }
+}
+
+// Overrides
+// =========
+.hide.hide {
+    display: none;
+}

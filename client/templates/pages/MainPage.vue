@@ -5,9 +5,6 @@
 
 <template>
   <section>
-    <div class="block">
-      <audio :src="currentTrack" controls="controls" autoplay></audio>
-    </div>
     <b-field>
       <b-input type="search" icon="magnify" v-model="searchStr"></b-input>
       <p class="control">
@@ -34,8 +31,8 @@
           selectable
           @select="(item)=>{playCurrent(item, contentTabKey);}"
         >
-          <template 
-            slot-scope="props" 
+          <template
+            slot-scope="props"
             @click="toggle(props.row)">
             <b-table-column field="id" label="ID" width="40" sortable numeric>
               <a target="_blank" :href="props.row.permalink_url">{{ props.row.id }}</a>
@@ -76,61 +73,11 @@
 
     <a href="test">Test</a>
   </section>
-  <!-- <b-container class="playerContainer">
-    <b-row>
-      <b-col>
-        <h3>Player</h3>
-      </b-col>
-    </b-row>
-
-    <b-row>
-      <b-input-group :prepend="$t('Search track')" class="mt-3">
-        <b-form-input v-model="searchStr"></b-form-input>
-        <b-button variant="info" @click="search()">{{ $t('Search') }}</b-button>
-      </b-input-group>
-    </b-row>
-
-    <b-row>
-      <audio :src="currentTrack" controls="controls" autoplay></audio>
-    </b-row>
-
-    <b-row>
-      <b-tabs pills card vertical class="playerTabs">
-        <b-tab
-          v-for="(contentTabValue, contentTabKey) in audioInfo"
-          v-bind:key="contentTabKey"
-          :title="contentTabKey"
-          :class="{active: Object.keys(audioInfo).indexOf(contentTabKey)===0}"
-        >
-          <b-list-group>
-            <b-list-group-item
-              :href="item.permalink_url"
-              :class="`flex-column align-items-start playerRow ${selectedIndexes[contentTabKey]===index?'active': ''}`"
-              v-for="(item, index) in contentTabValue"
-              v-bind:key="index"
-              @click.prevent="playCurrent(item.id, contentTabKey, index)"
-            >
-              <b-img
-                thumbnail
-                fluid
-                :src="item.artwork_url"
-                class="playerThumbImage"
-                @error="imgFallback($event)"
-              ></b-img>
-              <div class="d-flex w-100 justify-content-between playerDescription">
-                <h5 class="mb-1">{{item.title}}</h5>
-                <small>{{(item.user?`${item.user.username}:${item.id}`:item.id)}}</small>
-              </div>
-            </b-list-group-item>
-          </b-list-group>
-        </b-tab>
-      </b-tabs>
-    </b-row>
-  </b-container>-->
 </template>
 
 
 <script>
+import { mapState } from "vuex";
 import { fetchJSON, handleSave } from "../../js/utils/helpers.js";
 
 const sortByImage = (a, b) => {
@@ -181,21 +128,35 @@ export default {
       };
     },
     async playCurrent(item, contentTabKey) {
+      if(contentTabKey!=='Tracks') return;
       const id = item.id;
       if (!id) return;
-      try {
+
+      this.$store.dispatch('action_currentIndex', this.audioInfo.Tracks.findIndex(x=>x.id===item.id));
+      /* try {
         const response = await fetchJSON("/api/music/trackinfo", "post", {
           ids: [id]
         });
         this.currentTrack = response.result[0].url;
-        this.$store.dispatch('callCurrentTrack', this.currentTrack);
+        this.$store.dispatch('action_currentIndex', this.currentTrack);
         this.selected = item;
       } catch (ex) {
         console.log(ex);
-      }
+      } */
     },
     imgFallback(event) {
       event.target.src = "img/notfound.jfif";
+    }
+  },
+  computed: {
+    ...mapState(["currentIndex"])
+  },
+  watch: {
+    audioInfo(newValue){
+        this.$store.dispatch('action_audioInfo', newValue);
+    },
+    currentIndex(newValue){
+        this.selected = this.audioInfo.Tracks[newValue];
     }
   }
 };

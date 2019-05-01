@@ -1,25 +1,29 @@
+const fields = ["currentIndex", "audioInfo"];
+const states = {};
+const mutations = {};
+const actions = {};
+fields.forEach(key => {
+    states[key] = null;
+    mutations[`mutation_${key}`] = (state, value) => state[key] = value;
+    actions[`action_${key}`] = (context, value) => context.commit(`mutation_${key}`, value);
+});
+
+
 export default {
-    state: {
-        currentTrack: '',
-    },
+    state: states,
     getters: {},
     mutations: {
         initialiseStore(state) {
-			// Check if the ID exists
-			if(localStorage.getItem('playerStore')) {
-				// Replace the state object with the stored item
-				this.replaceState(
-					Object.assign(state, JSON.parse(localStorage.getItem('playerStore')))
-				);
-			}
-		},
-        setCurrentTrack(state, url) {
-            state.currentTrack = url;
-        }
+            if (localStorage.getItem('playerStore')) {
+                this.replaceState(
+                    Object.assign(state, JSON.parse(localStorage.getItem('playerStore')))
+                );
+            }
+        },
+        ...mutations
     },
-    actions: {
-        callCurrentTrack(context, url) {
-            context.commit('setCurrentTrack', url);
-        }
+    actions,
+    watch: {
+        currentIndex: (value)=>console.log('index value', value)
     }
 };
