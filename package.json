@@ -52,6 +52,7 @@
     "concurrently": "^4.1.0",
     "css-loader": "^2.1.1",
     "dotenv-webpack": "^1.7.0",
+    "hard-source-webpack-plugin": "^0.13.1",
     "node-sass": "^4.12.0",
     "nodemon": "^1.18.11",
     "postcss-loader": "^3.0.0",

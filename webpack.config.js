@@ -1,6 +1,8 @@
+const { ProvidePlugin } = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const Dotenv = require('dotenv-webpack');
 const path = require('path');
@@ -69,6 +71,10 @@ const config = {
   devtool: 'source-map',
   watch: true,
   plugins: [
+    new ProvidePlugin({
+      $t: [path.resolve(__dirname, 'client/js/utils/translate.js'), 'default'],
+    }),
+    new HardSourceWebpackPlugin(),
     new CleanWebpackPlugin(),
     new Dotenv(),
     new VueLoaderPlugin(),

@@ -2,12 +2,9 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import Buefy from 'buefy';
 import VueRouter from 'vue-router';
-import VuexI18n from 'vuex-i18n';
-
-import Translations from './localizations/english.locale';
-import playerStore from './stores/playerStore';
 
 import '../styles/index.scss'
+import playerStore from './stores/playerStore';
 
 const router = new VueRouter({
   mode: 'history',
@@ -52,26 +49,18 @@ router.beforeEach((to, from, next) => {
 });
 
 
-Vue.use(Buefy);
 Vue.use(Vuex);
+Vue.use(Buefy);
 Vue.use(VueRouter);
 
 const store = new Vuex.Store(playerStore);
-Vue.use(VuexI18n.plugin, store);
-Vue.i18n.add('en', Translations);
-Vue.i18n.set('en');
-
-store.subscribe((mutation, state) => {
-	// Store the state object as a JSON string
-	localStorage.setItem('playerStore', JSON.stringify(state));
-});
-
 
 new Vue({
   store,
   router,
   data() {
     return {
+      testStateObj: true,
       playerComponent: 'playerComponent'
     }
   },
@@ -80,7 +69,4 @@ new Vue({
       return this.$route.name;
     }
   },
-  beforeCreate() {
-		this.$store.commit('initialiseStore');
-	}
 }).$mount('#app');

@@ -7,11 +7,16 @@
     <div class="player__rowwrap">
       <div class="player__time">
         <div class="player__timer">
-          <div class="player__timer__elapsed" v-text="playerInfo.elapsed"></div>
-          <div class="player__timer__total" v-text="playerInfo.duration"></div>
+          <div class="player__timer__elapsed">{{elapsed}}</div>
+          <div class="player__timer__total">{{duration}}</div>
         </div>
         <div class="slider player__progress-bar">
-          <input type="range" :value="playerInfo.elapsed" :max="playerInfo.duration">
+          <input
+            type="range"
+            :value="playerInfo.elapsed"
+            :max="playerInfo.duration"
+            @mousedown="isDraggingRange=true"
+            @mouseup="isDraggingRange=false; $refs.audioPlayer.currentTime=$event.target.value;">
         </div>
       </div>
 
@@ -141,9 +146,9 @@
         class="hide"
         ref="audioPlayer"
         autoplay
-
         @play="playerInfo.playing=true"
         @pause="playerInfo.playing=false"
+        @timeupdate="onTimeUpdate($event)"
       ></audio>
     </div>
   </section>
@@ -151,50 +156,75 @@
 
 
 <script>
-import { mapState } from "vuex";
-import { fetchJSON, handleSave } from "../../js/utils/helpers.js";
+import { fetchJSON, extendGlobalState } from "../../js/utils/helpers.js";
 const sortByImage = (a, b) => {
   if (!a.artwork_url) return 1;
   if (!b.artwork_url) return -1;
   return 0;
 };
+const formatTime = secs => {
+  let minutes = Math.floor(secs / 60),
+    seconds = Math.floor(secs % 60);
+
+  if (seconds < 10) {
+    seconds = "0" + seconds;
+  }
+
+  return minutes + ":" + seconds;
+};
 
 export default {
-  //mixins: [handleSave([], "playercomponent")],
+  mixins: [extendGlobalState],
   data() {
     return {
       playerInfo: {
+        duration: 0,
+        elapsed: 0,
         playing: false,
         repeat: false,
-        duration: 100,
-        elapsed: 10,
         shuffle: false,
         title: "qwe",
         album: "qwe",
         artist: "qwe",
         volume: 100,
         currentTrack: ""
-      }
+      },
+      isDraggingRange: false
     };
   },
-  computed: {
-    ...mapState(["currentIndex", "audioInfo"])
-  },
   methods: {
-    goToTrack(step) {
-      const maxIndex = +this.audioInfo?.Tracks?.length;
-      let newIndex = this.currentIndex + step;
-      if(newIndex<0) newIndex=0;
-      if(newIndex>maxIndex) newIndex=maxIndex;
-      this.$store.dispatch('action_currentIndex', newIndex);
+    onTimeUpdate($event) {
+      if (!this.isDraggingRange) {
+        this.playerInfo.elapsed = $event.target.currentTime;
+        this.playerInfo.duration = $event.target.duration;
+      }
     },
+
+    goToTrack(step) {
+      const maxIndex = +this.globalState.audioInfo?.Tracks?.length || 0;
+      let newIndex = this.globalState.currentIndex + step;
+      if (newIndex < 0) newIndex = 0;
+      if (newIndex > maxIndex) newIndex = maxIndex;
+
+      this.globalState.currentIndex = newIndex;
+    },
+
     toggleRepeat() {},
+
     toggleShuffle() {},
+
     async togglePlay(currentIndex) {
+      if (!this.playerInfo.currentTrack) {
+        currentIndex = 0;
+        console.log(currentIndex);
+        this.globalState.currentIndex = {
+          skipWatching: true,
+          v: currentIndex
+        };
+      }
       if (Number.isInteger(currentIndex)) {
         try {
-          const item = this.audioInfo?.Tracks[currentIndex];
-          console.log(currentIndex, item);
+          const item = this.globalState.audioInfo?.Tracks[currentIndex];
           const response = await fetchJSON("/api/music/trackinfo", "post", {
             ids: [item.id]
           });
@@ -207,27 +237,22 @@ export default {
 
       if (this.playerInfo.playing) {
         this.$refs.audioPlayer.pause();
-      }
-      else{
+      } else {
         this.$refs.audioPlayer.play();
       }
     }
   },
-  watch: {
-    currentIndex(value) {
-      this.togglePlay(value);
-    }
+  mounted() {
+    Object.assign(this.globalWatch, {
+      currentIndex: newValue => this.togglePlay(newValue)
+    });
   },
-  filters: {
-    time: secs => {
-      let minutes = Math.floor(secs / 60),
-        seconds = Math.floor(secs % 60);
-
-      if (seconds < 10) {
-        seconds = "0" + seconds;
-      }
-
-      return minutes + ":" + seconds;
+  computed: {
+    duration() {
+      return formatTime(this.playerInfo.duration);
+    },
+    elapsed() {
+      return formatTime(this.playerInfo.elapsed);
     }
   }
 };

@@ -8,7 +8,7 @@
     <b-field>
       <b-input type="search" icon="magnify" v-model="searchStr"></b-input>
       <p class="control">
-        <button class="button is-primary" variant="info" @click="search()">{{ $t('Search') }}</button>
+        <button class="button is-primary" variant="info" @click="search()">{{ ('Search') }}</button>
       </p>
     </b-field>
     <b-tabs v-model="activeTab">
@@ -27,7 +27,7 @@
           detailed
           detail-key="id"
           :show-detail-icon="true"
-          :selected.sync="selected"
+          :selected.sync="selectedObj"
           selectable
           @select="(item)=>{playCurrent(item, contentTabKey);}"
         >
@@ -78,7 +78,7 @@
 
 <script>
 import { mapState } from "vuex";
-import { fetchJSON, handleSave } from "../../js/utils/helpers.js";
+import { fetchJSON, handleSave, extendGlobalState } from "../../js/utils/helpers.js";
 
 const sortByImage = (a, b) => {
   if (!a.artwork_url) return 1;
@@ -87,7 +87,9 @@ const sortByImage = (a, b) => {
 };
 
 export default {
-  mixins: [handleSave(["audioInfo", "searchStr", "cachedUrls"], 'mainpage')],
+  mixins: [
+    handleSave(["audioInfo", "searchStr", "cachedUrls"], 'mainpage'),
+    extendGlobalState],
   data() {
     return {
       searchStr: "Skillet",
@@ -132,31 +134,26 @@ export default {
       const id = item.id;
       if (!id) return;
 
-      this.$store.dispatch('action_currentIndex', this.audioInfo.Tracks.findIndex(x=>x.id===item.id));
-      /* try {
-        const response = await fetchJSON("/api/music/trackinfo", "post", {
-          ids: [id]
-        });
-        this.currentTrack = response.result[0].url;
-        this.$store.dispatch('action_currentIndex', this.currentTrack);
-        this.selected = item;
-      } catch (ex) {
-        console.log(ex);
-      } */
+      this.globalState.currentIndex = this.audioInfo.Tracks.findIndex(x=>x.id===item.id);
     },
     imgFallback(event) {
       event.target.src = "img/notfound.jfif";
     }
   },
-  computed: {
-    ...mapState(["currentIndex"])
+  computed:{
+    selectedObj: {
+      get: function () {
+        console.log(this.globalState.currentIndex);
+        return this.audioInfo.Tracks[this.globalState.currentIndex];
+      },
+      set: function (newValue) {
+        this.globalState.currentIndex = this.audioInfo.Tracks.findIndex(x=>x.id===newValue.id);
+      }
+    }
   },
   watch: {
     audioInfo(newValue){
-        this.$store.dispatch('action_audioInfo', newValue);
-    },
-    currentIndex(newValue){
-        this.selected = this.audioInfo.Tracks[newValue];
+      this.globalState.audioInfo = newValue;
     }
   }
 };

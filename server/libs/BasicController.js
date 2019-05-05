@@ -40,7 +40,7 @@ class BasicController {
                         };
                         if(process.env.DEBUG_ENABLED){
                             console.log("Method error: ", ex);
-                            errorResponse.errorMessage = errorMessage; 
+                            errorResponse.errorMessage = errorMessage;
                         }
                         response.code(500);
                         return errorResponse;

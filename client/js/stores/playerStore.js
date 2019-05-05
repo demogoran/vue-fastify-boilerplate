@@ -22,8 +22,5 @@ export default {
         },
         ...mutations
     },
-    actions,
-    watch: {
-        currentIndex: (value)=>console.log('index value', value)
-    }
+    actions
 };

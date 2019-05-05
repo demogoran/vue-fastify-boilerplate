@@ -22,12 +22,12 @@
                 <input class="input is-large" type="password" v-model="password">
               </div>
             </div>
-            <b-button variant="info" class="actionButton" @click="accountLogin()">{{ $t('Login') }}</b-button>
+            <b-button variant="info" class="actionButton" @click="accountLogin()">{{ ('Login') }}</b-button>
             <b-button
               variant="info"
               class="actionButton"
               @click="accountCreate()"
-            >{{ $t('Create') }}</b-button>
+            >{{ ('Create') }}</b-button>
           </div>
         </div>
       </div>
