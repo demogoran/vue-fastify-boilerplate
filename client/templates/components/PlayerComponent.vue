@@ -216,7 +216,6 @@ export default {
 
     changeVolume(newValue) {
       this.trackVolume = newValue;
-      console.log(this.trackVolume);
       this.$refs.audioPlayer.volume = this.trackVolume / 100;
     },
 
