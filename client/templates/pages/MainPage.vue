@@ -27,7 +27,7 @@
           detailed
           detail-key="id"
           :show-detail-icon="true"
-          :selected.sync="selectedObj"
+          :selected.sync="audioInfo.Tracks[globalState.currentIndex]"
           selectable
           @select="(item)=>{playCurrent(item, contentTabKey);}"
         >
@@ -70,8 +70,6 @@
         </b-table>
       </b-tab-item>
     </b-tabs>
-
-    <a href="test">Test</a>
   </section>
 </template>
 
@@ -89,7 +87,7 @@ const sortByImage = (a, b) => {
 export default {
   mixins: [
     handleSave(["audioInfo", "searchStr", "cachedUrls"], 'mainpage'),
-    extendGlobalState],
+    extendGlobalState("mainpage")],
   data() {
     return {
       searchStr: "Skillet",
@@ -107,7 +105,7 @@ export default {
       cachedUrls: {},
       activeTab: 0,
       currentTrack: null,
-      selected: null
+      selected: null,
     };
   },
   methods: {
@@ -140,21 +138,15 @@ export default {
       event.target.src = "img/notfound.jfif";
     }
   },
-  computed:{
-    selectedObj: {
-      get: function () {
-        console.log(this.globalState.currentIndex);
-        return this.audioInfo.Tracks[this.globalState.currentIndex];
-      },
-      set: function (newValue) {
-        this.globalState.currentIndex = this.audioInfo.Tracks.findIndex(x=>x.id===newValue.id);
-      }
-    }
-  },
   watch: {
     audioInfo(newValue){
       this.globalState.audioInfo = newValue;
     }
-  }
+  },
+  mounted() {
+    Object.assign(this.globalStateWatch, {
+      currentIndex: newValue => this.$forceUpdate()
+    });
+  },
 };
 </script>

@@ -16,7 +16,8 @@
             :value="playerInfo.elapsed"
             :max="playerInfo.duration"
             @mousedown="isDraggingRange=true"
-            @mouseup="isDraggingRange=false; $refs.audioPlayer.currentTime=$event.target.value;">
+            @mouseup="isDraggingRange=false; $refs.audioPlayer.currentTime=$event.target.value;"
+          >
         </div>
       </div>
 
@@ -72,13 +73,17 @@
           </svg>
         </div>
         <div class="slider slider--volume player__volume__slider">
-          <input type="range" :value="playerInfo.volume" max="100">
+          <input
+            type="range"
+            max="100"
+            :value="trackVolume"
+            @input="changeVolume(+$event.target.value)"
+          >
         </div>
       </div>
     </div>
 
     <h1 class="player__title" v-text="playerInfo.title"></h1>
-    <h2 class="player__sub-title">{{playerInfo.album}} - {{playerInfo.artist}}</h2>
 
     <svg xmlns="http://www.w3.org/2000/svg" class="hide">
       <symbol id="play" viewBox="0 0 23.2 26.2">
@@ -149,6 +154,7 @@
         @play="playerInfo.playing=true"
         @pause="playerInfo.playing=false"
         @timeupdate="onTimeUpdate($event)"
+        @ended="goToTrack(1)"
       ></audio>
     </div>
   </section>
@@ -156,13 +162,18 @@
 
 
 <script>
-import { fetchJSON, extendGlobalState } from "../../js/utils/helpers.js";
+import {
+  fetchJSON,
+  extendGlobalState,
+  handleSave
+} from "../../js/utils/helpers.js";
 const sortByImage = (a, b) => {
   if (!a.artwork_url) return 1;
   if (!b.artwork_url) return -1;
   return 0;
 };
 const formatTime = secs => {
+  secs = secs || 0;
   let minutes = Math.floor(secs / 60),
     seconds = Math.floor(secs % 60);
 
@@ -174,7 +185,10 @@ const formatTime = secs => {
 };
 
 export default {
-  mixins: [extendGlobalState],
+  mixins: [
+    extendGlobalState("playercomponent"),
+    handleSave(["trackVolume"], "playercomponent")
+  ],
   data() {
     return {
       playerInfo: {
@@ -183,12 +197,12 @@ export default {
         playing: false,
         repeat: false,
         shuffle: false,
-        title: "qwe",
-        album: "qwe",
-        artist: "qwe",
-        volume: 100,
+        title: "",
+        album: "",
+        artist: "",
         currentTrack: ""
       },
+      trackVolume: 100,
       isDraggingRange: false
     };
   },
@@ -200,13 +214,21 @@ export default {
       }
     },
 
+    changeVolume(newValue) {
+      this.trackVolume = newValue;
+      console.log(this.trackVolume);
+      this.$refs.audioPlayer.volume = this.trackVolume / 100;
+    },
+
     goToTrack(step) {
-      const maxIndex = +this.globalState.audioInfo?.Tracks?.length || 0;
+      const tracksAmount = +this.globalState.audioInfo?.Tracks?.length || 0;
+      const maxIndex = tracksAmount - 1;
       let newIndex = this.globalState.currentIndex + step;
-      if (newIndex < 0) newIndex = 0;
-      if (newIndex > maxIndex) newIndex = maxIndex;
+      if (newIndex < 0) newIndex = maxIndex;
+      if (newIndex > maxIndex) newIndex = 0;
 
       this.globalState.currentIndex = newIndex;
+      this.togglePlay(newIndex);
     },
 
     toggleRepeat() {},
@@ -214,13 +236,9 @@ export default {
     toggleShuffle() {},
 
     async togglePlay(currentIndex) {
-      if (!this.playerInfo.currentTrack) {
+      if (!this.playerInfo.currentTrack && !currentIndex) {
         currentIndex = 0;
-        console.log(currentIndex);
-        this.globalState.currentIndex = {
-          skipWatching: true,
-          v: currentIndex
-        };
+        this.globalState.currentIndex = currentIndex;
       }
       if (Number.isInteger(currentIndex)) {
         try {
@@ -228,7 +246,9 @@ export default {
           const response = await fetchJSON("/api/music/trackinfo", "post", {
             ids: [item.id]
           });
-          this.playerInfo.currentTrack = response.result[0].url;
+          const trackData = response.result[0];
+          this.playerInfo.title = trackData.name;
+          this.playerInfo.currentTrack = trackData.url;
           return;
         } catch (ex) {
           console.log(ex);
@@ -243,7 +263,7 @@ export default {
     }
   },
   mounted() {
-    Object.assign(this.globalWatch, {
+    Object.assign(this.globalStateWatch, {
       currentIndex: newValue => this.togglePlay(newValue)
     });
   },
