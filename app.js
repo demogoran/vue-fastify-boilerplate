@@ -21,6 +21,7 @@ const fastify = Fastify({
     }
 });
 
+fastify.register(require('fastify-compress'), { global: false })
 fastify.register(staticServe, {
     root: path.join(__dirname, 'client'),
     prefix: '/client/',
@@ -36,13 +37,15 @@ fastify.register(fastifyJWT, {
 });
 fastify.register(ControllersLoader);
 
+
+//history support
+fastify.get('*', (request, reply) => {
+    reply.sendFile('index.html');
+});
+
 fastify.listen(process.env.PORT || 3001, '0.0.0.0', (err, address) => {
     if (err) throw err;
     fastify.log.info(`server listening on ${address}`)
-});
-
-fastify.get('*', function (request, reply) {
-    reply.sendFile('index.html');
 });
 
 /*

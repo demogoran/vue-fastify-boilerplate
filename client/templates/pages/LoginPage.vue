@@ -37,9 +37,13 @@
 
 
 <script>
-import { fetchJSON, handleSave } from "../../js/utils/helpers.js";
+import { API } from "../../js/utils/api.js";
+import { MixinInjector } from "../../js/utils/helpers.js";
 export default {
-  mixins: [handleSave(["login"])],
+  mixins: [
+    MixinInjector.handleSave(["login"]),
+    MixinInjector.addAlert()
+  ],
   data() {
     return {
       login: "admin",
@@ -48,33 +52,27 @@ export default {
     };
   },
   methods: {
-    showAlert: function(message) {
-      if (!message) return;
-      this.$toast.open({
-        duration: 5000,
-        message: message,
-        position: "is-bottom",
-        type: "is-danger"
-      });
-    },
-    accountLogin: async function() {
+    async accountLogin() {
       this.alertContent = "";
-      const result = await fetchJSON("/api/user/login", "post", {
+      const result = await API.userLogin({
         login: this.login,
         password: this.password
       });
-      this.showAlert(result.errorMessage);
+      this.showToastMessage(result.errorMessage);
       console.log(result);
       if (!result.error) this.$router.push("/");
     },
-    accountCreate: async function() {
+    async accountCreate() {
       this.alertContent = "";
-      const result = await fetchJSON("/api/user/create", "post", {
+      const result = await API.userCreate({
         login: this.login,
         password: this.password
       });
 
-      this.showAlert(result.errorMessage);
+      result.error?
+        this.showToastMessage(result.errorMessage):
+        this.showToastMessage("User created", true);
+
       console.log(result);
       if (!result.error) this.$router.push("/");
     }

@@ -103,10 +103,9 @@
 
 
 <script>
+import { API } from "../../js/utils/api.js";
 import {
-  fetchJSON,
-  extendGlobalState,
-  handleSave
+  MixinInjector
 } from "../../js/utils/helpers.js";
 const sortByImage = (a, b) => {
   if (!a.artwork_url) return 1;
@@ -127,8 +126,9 @@ const formatTime = secs => {
 
 export default {
   mixins: [
-    extendGlobalState("playercomponent"),
-    handleSave(["trackVolume"], "playercomponent")
+    MixinInjector.extendGlobalState("playercomponent"),
+    MixinInjector.handleSave(["trackVolume"], "playercomponent"),
+    MixinInjector.getLoadedCompontents("playercomponent"),
   ],
   data() {
     return {
@@ -158,6 +158,7 @@ export default {
     changeVolume(newValue) {
       this.trackVolume = newValue;
       this.$refs.audioPlayer.volume = this.trackVolume / 100;
+      console.log(this.$refs.audioPlayer.volume);
     },
 
     goToTrack(step) {
@@ -183,7 +184,7 @@ export default {
       if (Number.isInteger(currentIndex)) {
         try {
           const item = this.globalState.audioInfo?.Tracks[currentIndex];
-          const response = await fetchJSON("/api/music/trackinfo", "post", {
+          const response = await API.musicGetInfo({
             ids: [item.id]
           });
           const trackData = response.result[0];
@@ -206,6 +207,7 @@ export default {
     Object.assign(this.globalStateWatch, {
       currentIndex: newValue => this.togglePlay(newValue)
     });
+    this.changeVolume(this.trackVolume);
   },
   computed: {
     duration() {

@@ -11,6 +11,9 @@
         <button class="button is-primary" variant="info" @click="search()">{{ ('Search') }}</button>
       </p>
     </b-field>
+    <p class="control">
+      <button class="button is-primary" variant="info" @click="download()">{{ ('Download') }}</button>
+    </p>
     <b-tabs v-model="activeTab">
       <b-tab-item
         v-for="(contentTabValue, contentTabKey) in audioInfo"
@@ -29,6 +32,9 @@
           :show-detail-icon="true"
           :selected.sync="audioInfo.Tracks[globalState.currentIndex]"
           selectable
+          :checked-rows.sync="checkedRows"
+          checkable
+          :is-row-checkable="()=>contentTabKey==='Tracks'"
           @select="(item)=>{playCurrent(item, contentTabKey);}"
         >
           <template
@@ -75,8 +81,12 @@
 
 
 <script>
-import { mapState } from "vuex";
-import { fetchJSON, handleSave, extendGlobalState } from "../../js/utils/helpers.js";
+import JSZip from 'jszip';
+import { API } from "../../js/utils/api.js";
+import { MixinInjector } from "../../js/utils/helpers.js";
+import Promise from 'lie';
+
+const zip = new JSZip();
 
 const sortByImage = (a, b) => {
   if (!a.artwork_url) return 1;
@@ -86,8 +96,9 @@ const sortByImage = (a, b) => {
 
 export default {
   mixins: [
-    handleSave(["audioInfo", "searchStr", "cachedUrls"], 'mainpage'),
-    extendGlobalState("mainpage")],
+    MixinInjector.handleSave(["audioInfo", "searchStr", "cachedUrls"], 'mainpage'),
+    MixinInjector.extendGlobalState("mainpage"),
+    MixinInjector.getLoadedCompontents("mainpage")],
   data() {
     return {
       searchStr: "Skillet",
@@ -106,14 +117,12 @@ export default {
       activeTab: 0,
       currentTrack: null,
       selected: null,
+      checkedRows: []
     };
   },
   methods: {
-    toggle(row) {
-      this.$refs.table.toggleDetails(row);
-    },
     async search() {
-      const response = await fetchJSON("/api/music/search", "post", {
+      const response = await API.musicSearch({
         q: this.searchStr
       });
       const kinds = response?.result;
@@ -134,8 +143,26 @@ export default {
 
       this.globalState.currentIndex = this.audioInfo.Tracks.findIndex(x=>x.id===item.id);
     },
+    async download(){
+      const ids = this.checkedRows.map(x=>x.id);
+      const response = await API.musicGetInfo({ids});
+
+      const promises = response.result.map(async x=>{
+        const binary = await fetch(x.url).then(x=>x.arrayBuffer());
+        zip.file(`${x.name}.mp3`, binary);
+      })
+      await Promise.all(promises);
+
+      const fileResult = await zip.generateAsync({
+          type: "blob"
+      });
+      window.location.href = URL.createObjectURL(fileResult);
+    },
     imgFallback(event) {
       event.target.src = "img/notfound.jfif";
+    },
+    toggle(row) {
+      this.$refs.table.toggleDetails(row);
     }
   },
   watch: {
