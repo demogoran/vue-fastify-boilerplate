@@ -33,7 +33,7 @@ fastify.register(fastifyJWT, {
     verify: {
         maxAge: "12h",
     },
-    secret: ';lkjunH(*&GY@UHU@J#HIKJBH(&&!FVG#OBNIOMI!@KJLH#LY!@*)H#)NOI@HL#H!@L#GB!OII@HG#G'
+    secret: process.env.SECRET
 });
 fastify.register(ControllersLoader);
 

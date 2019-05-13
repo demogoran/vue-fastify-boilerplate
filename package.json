@@ -9,7 +9,8 @@
     "build": "webpack --mode production --config webpack.prod.config.js --optimize-minimize --define process.env.NODE_ENV=\"'production'\"",
     "pack": "webpack --mode development --config webpack.config.js",
     "serv": "nodemon --exec babel-node app.js",
-    "dev": "concurrently \"npm run pack\" \"npm run serv\""
+    "dev": "concurrently \"npm run pack\" \"npm run serv\"",
+    "testBabel": "node babel-custom-module/babel-string-collect/transform.js"
   },
   "start": "npm run serv",
   "author": "",
@@ -51,6 +52,7 @@
     "autoprefixer": "^9.5.1",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
+    "babel-plugin-macros": "^2.5.1",
     "clean-webpack-plugin": "^2.0.1",
     "concurrently": "^4.1.0",
     "css-loader": "^2.1.1",

@@ -8,7 +8,7 @@ class MusicController extends BasicController {
     constructor(fastify) {
         super();
 
-        this.allowedPathes = {
+        this.allowedMethods = {
             "MusicController.TrackInfo": false,
         };
         fastify.post(`${this.apiPrefix}/trackinfo`, this.TrackInfo);

@@ -42,5 +42,6 @@
     "rules": {
         "strict": 0,
         "no-console": "off"
-    }
+    },
+    "globals": {"generateRoute": true}
 }

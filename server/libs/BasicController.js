@@ -16,7 +16,7 @@ class BasicController {
                         }
                     }
                     try {
-                        if (!this.allowedPathes[`${obj.constructor.name}.${prop}`])
+                        if (!this.allowedMethods[`${obj.constructor.name}.${prop}`])
                             await request.jwtVerify();
                     } catch (err) {
                         response.code(500);

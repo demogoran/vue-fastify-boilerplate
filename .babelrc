@@ -3,10 +3,16 @@
         "@babel/preset-env"
     ],
     "plugins": [
-        ["@babel/plugin-proposal-decorators", {"decoratorsBeforeExport": true}],
+        [
+        "@babel/plugin-proposal-decorators",
+            {
+                "decoratorsBeforeExport": true
+            }
+        ],
         "@babel/plugin-proposal-optional-chaining",
         "@babel/plugin-proposal-object-rest-spread",
         "@babel/plugin-transform-runtime",
         "@babel/plugin-syntax-dynamic-import",
+        "macros",
     ]
 }

@@ -36,16 +36,10 @@ Vue.component('playerComponent', () => import('../templates/components/PlayerCom
 
 router.beforeEach((to, from, next) => {
   let jwtToken = localStorage.getItem('jwtToken');
-  if (to.path === `/login`) {
-    if (jwtToken) next(`/`);
-    else next();
-    return;
-  }
-  if (!jwtToken) {
-    next(`/login`);
-    return;
-  }
-  next();
+  if(to.path === `/login` && jwtToken) next('/');
+  else if(to.path === `/login` && !jwtToken) next();
+  else if(!jwtToken) next('/login');
+  else next();
 });
 
 

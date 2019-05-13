@@ -8,7 +8,7 @@ import LOCALES from '../libs/Localization';
 class UserController extends BasicController {
     constructor(fastify) {
         super();
-        this.allowedPathes = {
+        this.allowedMethods = {
             "UserController.Login": true,
             "UserController.Create": true
         };

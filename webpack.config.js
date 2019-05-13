@@ -74,7 +74,7 @@ const config = {
     new ProvidePlugin({
       $t: [path.resolve(__dirname, 'client/js/utils/translate.js'), 'default'],
     }),
-    new HardSourceWebpackPlugin(),
+    //new HardSourceWebpackPlugin(),
     new CleanWebpackPlugin(),
     new Dotenv(),
     new VueLoaderPlugin(),

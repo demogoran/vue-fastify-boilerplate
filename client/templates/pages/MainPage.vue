@@ -35,7 +35,7 @@
           :checked-rows.sync="checkedRows"
           checkable
           :is-row-checkable="()=>contentTabKey==='Tracks'"
-          @select="(item)=>{playCurrent(item, contentTabKey);}"
+          @select="(item)=>{setCurrent(item, contentTabKey);}"
         >
           <template
             slot-scope="props"
@@ -136,7 +136,14 @@ export default {
         Playlists: kinds.playlist.sort(sortByImage)
       };
     },
-    async playCurrent(item, contentTabKey) {
+    async loadPlaylist(item){
+      console.log(item);
+      this.audioInfo.Tracks = item.tracks;
+    },
+    async setCurrent(item, contentTabKey) {
+      if(contentTabKey==='Playlists'){
+        this.loadPlaylist(item);
+      }
       if(contentTabKey!=='Tracks') return;
       const id = item.id;
       if (!id) return;

@@ -30,6 +30,18 @@ export const ResultToKinds = (result) => {
                 username: x.user.username || "NO_NAME"
             }
         }
+        if (x.tracks) {
+            item.tracks = x.tracks.map(trackInfo => ({
+                permalink_url: trackInfo.permalink_url,
+                artwork_url: trackInfo.artwork_url ||
+                    (trackInfo.tracks ?
+                        (trackInfo.tracks[0] || {}) :
+                        {})
+                        .artwork_url,
+                title: trackInfo.title || "NO_TITLE",
+                id: trackInfo.id
+            }));
+        }
 
         if (x.kind === "user") {
             item.artwork_url = x.avatar_url;
