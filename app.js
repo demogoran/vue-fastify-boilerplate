@@ -1,3 +1,4 @@
+import url from 'url';
 import Fastify from 'fastify';
 import { staticServe } from 'fastify-auto-push';
 
@@ -21,6 +22,7 @@ const fastify = Fastify({
     }
 });
 
+fastify.register(require('fastify-ws'));
 fastify.register(require('fastify-compress'), { global: false })
 fastify.register(staticServe, {
     root: path.join(__dirname, 'client'),
@@ -37,6 +39,8 @@ fastify.register(fastifyJWT, {
 });
 fastify.register(ControllersLoader);
 
+fastify.decorate('socketList', {});
+
 
 //history support
 fastify.get('*', (request, reply) => {
@@ -47,6 +51,25 @@ fastify.listen(process.env.PORT || 3001, '0.0.0.0', (err, address) => {
     if (err) throw err;
     fastify.log.info(`server listening on ${address}`)
 });
+
+fastify.ready(err => {
+    if (err) throw err
+
+    console.log('Server started.')
+
+    fastify.ws
+        .on('connection', (socket, ws) => {
+            console.log('Client connected.', ws.url);
+
+            const { query: { token } } = url.parse(ws.url, true);
+            if(!token){
+                return;
+            }
+            console.log(token, fastify.socketList);
+            fastify.socketList[token] = socket;
+            socket.on('close', () => delete fastify.socketList[token]);
+        })
+})
 
 /*
 set GIT_SSH=

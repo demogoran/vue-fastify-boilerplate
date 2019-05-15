@@ -77,5 +77,25 @@ export const MixinInjector = {
                 },
             },
         }
+    },
+    addWebSocket: () => {
+        console.log('socket added');
+        return {
+            mounted(){
+                const token = (Date.now()).toString(36).substr(2)+Math.random().toString(36).substr(2);
+                const host = location.origin.replace(/^http/, 'ws')
+                const ws = new WebSocket(`${host}/?token=${token}`);
+                this.socket = ws;
+                this.socketToken = token;
+            },
+            async beforeRouteLeave(to, from, next) {
+                console.log(this.socke);
+                if(this.socket){
+                    this.socket.close();
+                    delete this.socket;
+                }
+                next();
+            },
+        };
     }
 }

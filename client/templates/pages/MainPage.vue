@@ -76,6 +76,8 @@
         </b-table>
       </b-tab-item>
     </b-tabs>
+
+    <a href='#' @click.prevent="$router.push('/test')">Test</a>
   </section>
 </template>
 
@@ -98,7 +100,8 @@ export default {
   mixins: [
     MixinInjector.handleSave(["audioInfo", "searchStr", "cachedUrls"], 'mainpage'),
     MixinInjector.extendGlobalState("mainpage"),
-    MixinInjector.getLoadedCompontents("mainpage")],
+    MixinInjector.getLoadedCompontents("mainpage"),
+    MixinInjector.addWebSocket()],
   data() {
     return {
       searchStr: "Skillet",
@@ -123,7 +126,8 @@ export default {
   methods: {
     async search() {
       const response = await API.musicSearch({
-        q: this.searchStr
+        q: this.searchStr,
+        socketToken: this.socketToken
       });
       const kinds = response?.result;
       if (response.error || !kinds) {
@@ -181,6 +185,30 @@ export default {
     Object.assign(this.globalStateWatch, {
       currentIndex: newValue => this.$forceUpdate()
     });
+
+
+    this.socket.onmessage = msg => {
+      try{
+        const data = JSON.parse(msg.data);
+        if(this.searchStr === data.type){
+          console.log(data);
+
+          const kinds = data?.data;
+          if (response.error || !kinds) {
+            console.log(response.errorMessage);
+            return;
+          }
+          this.audioInfo = {
+            Tracks: kinds.track.sort(sortByImage),
+            People: kinds.user.sort(sortByImage),
+            Playlists: kinds.playlist.sort(sortByImage)
+          };
+        }
+      }
+      catch(ex){
+        console.log("Error", ex);
+      }
+    };
   },
 };
 </script>

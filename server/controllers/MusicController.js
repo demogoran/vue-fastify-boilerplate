@@ -3,11 +3,11 @@ import { SoundCloudAPI } from '../libs/SoundCloudAPI';
 import { ResultToKinds } from "../libs/Helpers";
 import LOCALES from '../libs/Localization';
 
-
 class MusicController extends BasicController {
     constructor(fastify) {
         super();
 
+        this.fastify = fastify;
         this.allowedMethods = {
             "MusicController.TrackInfo": false,
         };
@@ -26,8 +26,12 @@ class MusicController extends BasicController {
         const data = request.body;
         if (!data.q) throw LOCALES.AUDIO_MISSED_DATA;
 
-        const result = await SoundCloudAPI.searchAudio(data.q);
-        return { result: ResultToKinds(JSON.parse(result).collection) };
+        const result = await this.runCachingWrapper(data.q, data.socketToken, async () => {
+            const result = await SoundCloudAPI.searchAudio(data.q);
+            const composedData = ResultToKinds(JSON.parse(result).collection);
+            return composedData;
+        });
+        return { result };
     }
 }
 module.exports = MusicController;
