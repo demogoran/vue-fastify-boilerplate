@@ -42,7 +42,7 @@ fastify.register(ControllersLoader);
 fastify.decorate('socketList', {});
 
 
-//history support
+// history support
 fastify.get('*', (request, reply) => {
     reply.sendFile('index.html');
 });
