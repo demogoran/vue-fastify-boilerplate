@@ -97,7 +97,7 @@ export default {
       console.log("copy", copy);
       copy.Serials = response?.result;
       this.serialsInfo = copy;
-      this.activeTab = 1;
+      this.activeTab = 0;
     },
     async getSeasons(item) {
       this.setVisited(item.url, 'Serials');
@@ -106,7 +106,7 @@ export default {
       const copy = { ...this.serialsInfo };
       copy.Seasons = response?.result;
       this.serialsInfo = copy;
-      this.activeTab = 2;
+      this.activeTab = 1;
     },
     async getSeries(item) {
       this.setVisited(item.url, 'Seasons');
@@ -118,6 +118,7 @@ export default {
         return item;
       });
       this.serialsInfo = copy;
+      this.activeTab = 2;
     },
     async setCurrent(item, contentTabKey) {
       if (contentTabKey === "Serials") {
