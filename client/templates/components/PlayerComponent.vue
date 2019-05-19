@@ -128,7 +128,7 @@ export default {
   mixins: [
     MixinInjector.extendGlobalState("playercomponent"),
     MixinInjector.handleSave(["trackVolume"], "playercomponent"),
-    MixinInjector.getLoadedCompontents("playercomponent"),
+    MixinInjector.getLoadedComponents("playercomponent"),
   ],
   data() {
     return {

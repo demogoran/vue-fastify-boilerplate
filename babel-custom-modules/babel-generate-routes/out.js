@@ -82,7 +82,7 @@ function (_BasicController) {
                   break;
                 }
 
-                throw _Localization["default"].AUDIO_MISSED_DATA;
+                throw _Localization["default"].MISSED_DATA;
 
               case 3:
                 _context.next = 5;
@@ -126,7 +126,7 @@ function (_BasicController) {
                   break;
                 }
 
-                throw _Localization["default"].AUDIO_MISSED_DATA;
+                throw _Localization["default"].MISSED_DATA;
 
               case 3:
                 _context2.next = 5;

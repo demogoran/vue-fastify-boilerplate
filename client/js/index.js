@@ -15,6 +15,11 @@ const router = new VueRouter({
       component: () => import('../templates/pages/MainPage.vue')
     },
     {
+      path: '/serials',
+      name: 'serials',
+      component: () => import('../templates/pages/SerialsPage.vue')
+    },
+    {
       path: '/test',
       name: 'test',
       component: () => import('../templates/pages/TestPage.vue')
@@ -36,6 +41,7 @@ Vue.component('playerComponent', () => import('../templates/components/PlayerCom
 
 router.beforeEach((to, from, next) => {
   let jwtToken = localStorage.getItem('jwtToken');
+  console.log('jwtToken', jwtToken);
   if(to.path === `/login` && jwtToken) next('/');
   else if(to.path === `/login` && !jwtToken) next();
   else if(!jwtToken) next('/login');

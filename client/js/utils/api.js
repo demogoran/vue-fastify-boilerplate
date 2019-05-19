@@ -1,24 +1,24 @@
 export const fetchJSON = async (url, method = "GET", body, o = {}) => {
-    const options = Object.assign({}, o);
+    const data = Object.assign({}, o);
     const jwt = localStorage.getItem('jwtToken');
-    if (!options.headers) {
-        options.headers = {};
+    if (!data.headers) {
+        data.headers = {};
     }
 
-    options['method'] = method;
-    options.headers['Content-Type'] = 'application/json';
+    data['method'] = method;
+    data.headers['Content-Type'] = 'application/json';
     if (body) {
-        options['body'] = body;
+        data['body'] = body;
     }
     if (jwt) {
-        options.headers['Authorization'] = `Bearer ${jwt}`;
+        data.headers['Authorization'] = `Bearer ${jwt}`;
     }
-    if (typeof options.body !== "string") {
-        options.body = JSON.stringify(options.body);
+    if (typeof data.body !== "string") {
+        data.body = JSON.stringify(data.body);
     }
 
 
-    return await fetch(url, options)
+    return await fetch(url, data)
         .then(x => x.json())
         .then(x => {
             if (x.setJWTToken) {
@@ -33,9 +33,14 @@ export const fetchJSON = async (url, method = "GET", body, o = {}) => {
 }
 
 export const API = {
-    musicGetInfo: async (arg) => fetchJSON("/api/music/trackinfo", "post", arg),
-    musicSearch: async (arg) => fetchJSON("/api/music/search", "post", arg),
+    userLogin: async (data) => fetchJSON("/api/user/login", "post", data),
+    userCreate: async (data) => fetchJSON("/api/user/create", "post", data),
 
-    userLogin: async (arg) => fetchJSON("/api/user/login", "post", arg),
-    userCreate: async (arg) => fetchJSON("/api/user/create", "post", arg),
+    musicGetInfo: async (data) => fetchJSON("/api/music/trackinfo", "post", data),
+    musicSearch: async (data) => fetchJSON("/api/music/search", "post", data),
+
+
+    serialsSearch: async (data) => fetchJSON("/api/serials/search", "post", data),
+    serialsGetSeasons: async (data) => fetchJSON(`/api/serials/seasons${data.url}`, "get"),
+    serialsGetSeries: async (data) => fetchJSON(`/api/serials/series/${data.id}${data.url}`, "get"),
 }

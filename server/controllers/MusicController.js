@@ -17,14 +17,14 @@ class MusicController extends BasicController {
 
     async TrackInfo(request) {
         const data = request.body;
-        if (!data.ids) throw LOCALES.AUDIO_MISSED_DATA;
+        if (!data.ids) throw LOCALES.MISSED_DATA;
         const result = await SoundCloudAPI.getTracksCompact(data.ids);
         return { result };
     }
 
     async Search(request) {
         const data = request.body;
-        if (!data.q) throw LOCALES.AUDIO_MISSED_DATA;
+        if (!data.q) throw LOCALES.MISSED_DATA;
 
         const result = await this.runCachingWrapper(data.q, data.socketToken, async () => {
             const result = await SoundCloudAPI.searchAudio(data.q);

@@ -4,8 +4,8 @@ const localesList = {
     USER_ALREADY_EXISTS: { 'en': 'User already exists' },
     USER_INVALID_PASSWORD: { 'en': 'Invalid password' },
 
-    AUDIO_MISSED_DATA: { 'en': 'Missed required fields'},
-    
+    MISSED_DATA: { 'en': 'Missed required fields'},
+
     UNAUTHORIZED: { 'en': 'Unauthorized' },
 }
 

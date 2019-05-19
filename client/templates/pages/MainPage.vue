@@ -86,7 +86,6 @@
 import JSZip from 'jszip';
 import { API } from "../../js/utils/api.js";
 import { MixinInjector } from "../../js/utils/helpers.js";
-import Promise from 'lie';
 
 const zip = new JSZip();
 
@@ -100,7 +99,7 @@ export default {
   mixins: [
     MixinInjector.handleSave(["audioInfo", "searchStr", "cachedUrls"], 'mainpage'),
     MixinInjector.extendGlobalState("mainpage"),
-    MixinInjector.getLoadedCompontents("mainpage"),
+    MixinInjector.getLoadedComponents("mainpage"),
     MixinInjector.addWebSocket()],
   data() {
     return {
@@ -194,10 +193,6 @@ export default {
           console.log(data);
 
           const kinds = data?.data;
-          if (response.error || !kinds) {
-            console.log(response.errorMessage);
-            return;
-          }
           this.audioInfo = {
             Tracks: kinds.track.sort(sortByImage),
             People: kinds.user.sort(sortByImage),

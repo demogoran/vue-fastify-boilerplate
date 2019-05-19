@@ -20,6 +20,7 @@ class BasicController {
                         if (!this.allowedMethods[`${obj.constructor.name}.${prop}`])
                             await request.jwtVerify();
                     } catch (err) {
+                        console.log('Verification error', err);
                         response.code(500);
                         return {
                             error: true,
@@ -49,6 +50,7 @@ class BasicController {
                 }
             }
         });
+        currentProxy.allowedMethods = [];
         currentProxy.classPrefix = this.constructor.name.toLowerCase().replace('controller', '');
         currentProxy.apiPrefix = `/api/${currentProxy.classPrefix}`;
         currentProxy.ERROR = ERROR;

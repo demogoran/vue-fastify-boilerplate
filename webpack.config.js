@@ -54,7 +54,6 @@ const config = {
       {
         test: /\.vue$/,
         include: [
-          path.resolve(__dirname, "client/js"),
           path.resolve(__dirname, "client/templates"),
         ],
         loader: 'vue-loader'
@@ -68,13 +67,12 @@ const config = {
     }
   },
   devtool: 'source-map',
+  watch: true,
   devServer: {
     watch: true,
     watchOptions: {
-      ignored: [
-        path.resolve(__dirname, 'cache'),
-        path.resolve(__dirname, 'webpack.config.js'),
-        path.resolve(__dirname, 'webpack.prod.config.js')
+      include: [
+        path.resolve(__dirname, "client"),
       ]
     }
   },

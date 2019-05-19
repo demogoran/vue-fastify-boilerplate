@@ -36,7 +36,7 @@ export const MixinInjector = {
             });
         },
     }),
-    getLoadedCompontents: (namespace) => ({
+    getLoadedComponents: (namespace) => ({
         data() {
             componentsList[namespace] = this;
             this.componentsList = componentsList;
@@ -46,6 +46,7 @@ export const MixinInjector = {
         const watch = {};
         fieldsToLoad.forEach(key => {
             watch[key] = (newObj) => {
+                console.log(key, newObj);
                 return localStorage.setItem(`${prefix}_${key}`, JSON.stringify(newObj));
             }
         });
