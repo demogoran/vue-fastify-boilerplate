@@ -6,6 +6,12 @@ class SerialsController extends BasicController {
     constructor(fastify) {
         super();
 
+        this.allowedMethods = {
+            "SerialsController.Search": true,
+            "SerialsController.GetSeasons": true,
+            "SerialsController.GetSeries": true,
+        };
+
         this.fastify = fastify;
         fastify.post(`${this.apiPrefix}/search`, this.Search);
         fastify.get(`${this.apiPrefix}/seasons/:url`, this.GetSeasons);
