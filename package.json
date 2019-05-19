@@ -8,7 +8,7 @@
     "push": "git add . && git commit -m \"updates\" && git push -u origin dev",
     "build": "webpack --mode production --config webpack.prod.config.js --optimize-minimize --define process.env.NODE_ENV=\"'production'\"",
     "pack": "webpack --mode development --config webpack.config.js",
-    "serv": "nodemon --watch server --exec babel-node app.js",
+    "serv": "nodemon --watch server --watch app.js --exec babel-node app.js",
     "dev": "concurrently \"npm run pack\" \"npm run serv\"",
     "testBabel": "node babel-custom-module/babel-string-collect/transform.js"
   },
