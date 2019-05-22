@@ -142,7 +142,7 @@ export default {
 
     setTrackTime(event) {
       this.$refs.audioPlayer.currentTime =
-        (event.clientX / this.$refs.trackbar.clientWidth) *
+        (event.offsetX / this.$refs.trackbar.clientWidth) *
         this.$refs.audioPlayer.duration;
     },
 
@@ -160,6 +160,13 @@ export default {
           const trackData = response.result[0];
           this.playerInfo.title = trackData.name;
           this.playerInfo.currentTrack = trackData.url;
+
+          if ("mediaSession" in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+              title: this.playerInfo.title,
+              artist: this.playerInfo.artist
+            });
+          }
           return;
         } catch (ex) {
           console.log(ex);
@@ -178,6 +185,21 @@ export default {
       currentIndex: newValue => this.togglePlay(newValue)
     });
     this.changeVolume(this.trackVolume);
+
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.setActionHandler("play", () => {
+        this.togglePlay();
+      });
+      navigator.mediaSession.setActionHandler("pause", () => {
+        this.togglePlay();
+      });
+      navigator.mediaSession.setActionHandler("previoustrack", () => {
+        this.goToTrack(-1);
+      });
+      navigator.mediaSession.setActionHandler("nexttrack", () => {
+        this.goToTrack(1);
+      });
+    }
   },
   computed: {
     duration() {

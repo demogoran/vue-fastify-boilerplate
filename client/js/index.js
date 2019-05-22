@@ -66,7 +66,6 @@ new Vue({
   },
   computed: {
     currentRoute: function(){
-      console.log(this.$route.name);
       return this.$route.name;
     }
   },
