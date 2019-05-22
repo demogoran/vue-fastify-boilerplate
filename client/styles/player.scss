@@ -64,7 +64,8 @@ $slider__thumb-width: 6px;
 .slider {
     line-height: 1em;
     overflow: hidden;
-    padding: 1.5px 0;
+    padding: 8.5px 0;
+    margin-top: -8px;
 
     [type=range] {
         appearance: none;
@@ -157,6 +158,7 @@ $slider__thumb-width: 6px;
         padding: $spacing--small;
         transition: opacity .4s, color .4s;
         max-width: 60px;
+        font-size: 20px;
 
         &:hover,
         &:focus {
@@ -207,10 +209,13 @@ $slider__thumb-width: 6px;
         width: 100%;
     }
 
-    &__rowwrap{
+    &__rowwrap {
         display: flex;
         justify-content: space-between;
-        padding-right: 30px;
+
+        .container {
+            width: 100%;
+        }
     }
 
     &__timer {
@@ -228,10 +233,18 @@ $slider__thumb-width: 6px;
 
     &__progress-bar {
         margin-top: 0 - $spacing--small;
-        padding: 7px 60px;
+        height: 20px;
+        background: #8caf8c;
+        padding: 0;
+
+        &__elapsed {
+            background: #ffff6aa3;
+            width: 0;
+            height: 100%;
+        }
     }
 
-    &__time{
+    &__time {
         flex: 4;
     }
 
@@ -239,23 +252,49 @@ $slider__thumb-width: 6px;
         display: flex;
         list-style: none;
         padding: $spacing--small $spacing;
-        flex: 2;
+        flex: 1;
+    }
+
+    @media screen and (max-width: 768px) {
+        &__controls {
+            width: calc(100% - 10px);
+            margin-top: 0;
+            justify-content: center;
+        }
     }
 
     &__volume {
         display: flex;
-        padding: $spacing;
         width: 50%;
-        flex: 1;
+        flex: .5;
 
         &__icon {
             width: $spacing;
             height: $spacing;
             margin-right: $spacing--small;
+            font-size: 20px;
         }
 
         &__slider {
             width: 100%;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        &__volume {
+            width: calc(100% - 10px);
+            margin-top: 0 !important;
+            padding-left: 15px;
+        }
+    }
+}
+
+@media screen and (max-width: 768px){
+    .has-mobile-cards{
+        .chevron-cell,
+        [data-label="ID"],
+        [data-label="User"]{
+            display: none !important;
         }
     }
 }

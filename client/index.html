@@ -14,7 +14,7 @@
 
 <body>
     <div id="app">
-        <keep-alive v-if="currentRoute!=='login'">
+        <keep-alive v-if="['main'].indexOf(currentRoute)>-1">
             <component :is="playerComponent"></component>
         </keep-alive>
         <router-view />

@@ -5,80 +5,50 @@
 <template>
   <section class="player">
     <div class="player__rowwrap">
-      <div class="player__time">
-        <div class="player__timer">
-          <div class="player__timer__elapsed">{{elapsed}}</div>
-          <div class="player__timer__total">{{duration}}</div>
-        </div>
-        <div class="slider player__progress-bar">
-          <input
-            type="range"
-            :value="playerInfo.elapsed"
-            :max="playerInfo.duration"
-            @mousedown="isDraggingRange=true"
-            @mouseup="isDraggingRange=false; $refs.audioPlayer.currentTime=$event.target.value;"
+      <div class="container">
+        <div class="player__time">
+          <div class="player__timer">
+            <div class="player__timer__elapsed">{{elapsed}}</div>
+            <div class="player__timer__total">{{duration}}</div>
+          </div>
+          <div
+            class="slider player__progress-bar"
+            ref="trackbar"
+            @click.prevent="setTrackTime($event)"
           >
+            <div
+              class="player__progress-bar__elapsed"
+              v-bind:style="{width: `${playerInfo.elapsed/playerInfo.duration*100}%`}"
+            ></div>
+          </div>
         </div>
-      </div>
 
-      <ul class="player__controls">
-        <li
-          class="control control--small"
-          v-bind:class="{
-                    'control--active' : playerInfo.repeat,
-                    'control--dimmed' : !playerInfo.repeat
-                }"
-          @click="toggleRepeat"
-        >
-          <svg class="icon" viewBox="0 0 100 100">
-            <use xlink:href="client/img/buttonsSet.svg#repeat"></use>
-          </svg>
-        </li>
-        <li class="control" @click="goToTrack(-1)">
-          <svg class="icon" viewBox="0 0 100 100">
-            <use xlink:href="client/img/buttonsSet.svg#skip-back"></use>
-          </svg>
-        </li>
-        <li class="control control--outlined">
-          <svg class="icon" viewBox="0 0 100 100" @click="togglePlay()" v-if="!playerInfo.playing">
-            <use xlink:href="client/img/buttonsSet.svg#play"></use>
-          </svg>
-          <svg class="icon" viewBox="0 0 100 100" @click="togglePlay()" v-if="playerInfo.playing">
-            <use xlink:href="client/img/buttonsSet.svg#pause"></use>
-          </svg>
-        </li>
-        <li class="control" @click="goToTrack(1)">
-          <svg class="icon" viewBox="0 0 100 100">
-            <use xlink:href="client/img/buttonsSet.svg#skip-forward"></use>
-          </svg>
-        </li>
-        <li
-          class="control control--small"
-          v-bind:class="{
-                    'control--active' : playerInfo.shuffle,
-                    'control--dimmed' : !playerInfo.shuffle
-                }"
-          @click="toggleShuffle"
-        >
-          <svg class="icon" viewBox="0 0 100 100">
-            <use xlink:href="client/img/buttonsSet.svg#shuffle"></use>
-          </svg>
-        </li>
-      </ul>
+        <div class="level">
+          <ul class="player__controls level-left">
+            <li class="control">
+              <i @click="goToTrack(-1)" class="fas fa-backward"></i>
+            </li>
+            <li class="control">
+              <i @click="togglePlay()" :class="`fas ${!playerInfo.playing?'fa-play':'fa-pause'}`"></i>
+            </li>
+            <li class="control">
+              <i @click="goToTrack(1)" class="fas fa-forward"></i>
+            </li>
+          </ul>
 
-      <div class="player__volume">
-        <div class="player__volume__icon">
-          <svg class="icon" viewBox="0 0 100 100">
-            <use xlink:href="client/img/buttonsSet.svg#volume"></use>
-          </svg>
-        </div>
-        <div class="slider slider--volume player__volume__slider">
-          <input
-            type="range"
-            max="100"
-            :value="trackVolume"
-            @input="changeVolume(+$event.target.value)"
-          >
+          <div class="player__volume level-right">
+            <div class="player__volume__icon">
+              <i class="fas fa-volume-up"></i>
+            </div>
+            <div class="slider slider--volume player__volume__slider">
+              <input
+                type="range"
+                max="100"
+                :value="trackVolume"
+                @input="changeVolume(+$event.target.value)"
+              >
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -104,9 +74,7 @@
 
 <script>
 import { API } from "../../js/utils/api.js";
-import {
-  MixinInjector
-} from "../../js/utils/helpers.js";
+import { MixinInjector } from "../../js/utils/helpers.js";
 const sortByImage = (a, b) => {
   if (!a.artwork_url) return 1;
   if (!b.artwork_url) return -1;
@@ -128,7 +96,7 @@ export default {
   mixins: [
     MixinInjector.extendGlobalState("playercomponent"),
     MixinInjector.handleSave(["trackVolume"], "playercomponent"),
-    MixinInjector.getLoadedComponents("playercomponent"),
+    MixinInjector.getLoadedComponents("playercomponent")
   ],
   data() {
     return {
@@ -136,7 +104,6 @@ export default {
         duration: 0,
         elapsed: 0,
         playing: false,
-        repeat: false,
         shuffle: false,
         title: "",
         album: "",
@@ -169,12 +136,15 @@ export default {
       if (newIndex > maxIndex) newIndex = 0;
 
       this.globalState.currentIndex = newIndex;
+      this.$refs.audioPlayer.pause();
       this.togglePlay(newIndex);
     },
 
-    toggleRepeat() {},
-
-    toggleShuffle() {},
+    setTrackTime(event) {
+      this.$refs.audioPlayer.currentTime =
+        (event.clientX / this.$refs.trackbar.clientWidth) *
+        this.$refs.audioPlayer.duration;
+    },
 
     async togglePlay(currentIndex) {
       if (!this.playerInfo.currentTrack && !currentIndex) {
