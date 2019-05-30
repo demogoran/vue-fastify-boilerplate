@@ -66,7 +66,7 @@ export const getTrackerMP3List = ($, $elem, magnet) => {
         const resultPath = pathParts.join(' || ');
         return {
             id: `${Date.now()}${i}`,
-            permalink_url: `/api/music/trackerStream?filePath=${resultPath}&magnet=${magnet}`,
+            permalink_url: `/api/music/trackerStream?filePath=${resultPath}&magnet=${encodeURIComponent(magnet)}`,
             shortname: title,
             title: resultPath,
             isTracker: true,

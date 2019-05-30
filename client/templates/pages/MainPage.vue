@@ -157,7 +157,7 @@ export default {
         People: kinds.user.sort(sortByImage),
         Playlists: kinds.playlist.sort(sortByImage)
       };
-      this.activeTab = 0;
+      this.activeTab = 2;
     },
 
     async loadPlaylist(item){
@@ -177,6 +177,7 @@ export default {
         People: this.audioInfo.People,
         Playlists: this.audioInfo.Playlists
       };
+      this.activeTab = 0;
     },
 
     async setCurrent(item, contentTabKey) {
