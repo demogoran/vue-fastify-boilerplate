@@ -94,7 +94,8 @@ class MusicController extends BasicController {
                 resolve(fileList.map(x => ({
                     name: x.name,
                     track: engine.files.find(y =>
-                        y.path === x.path.split(' || ').join('\\'))
+                        y.path === x.path.split(' || ').join('\\')
+                        ||y.path === x.path.split(' || ').join('/'))
                 })));
             });
             engine.on('error', (err) => console.log(err));
@@ -118,13 +119,15 @@ class MusicController extends BasicController {
     async TrackerStream(request, response) {
         const { filePath, magnet } = request.query;
         const filePathTorr = filePath.split(' || ').join('\\');
+        const filePathTorrLinux = filePath.split(' || ').join('\\');
         console.log(filePathTorr);
         const track = await new Promise((resolve) => {
             const engine = torrentStream(magnet);
             engine.on('ready', () => {
                 resolve(engine.files.find(x => {
                     //console.log(x.path, filePathTorr, x.path === filePathTorr);
-                    return x.path === filePathTorr;
+                    return x.path === filePathTorr
+                        || x.path === filePathTorrLinux;
                 }));
             });
             engine.on('error', (err) => console.log(err));
