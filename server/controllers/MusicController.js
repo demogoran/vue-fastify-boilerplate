@@ -119,7 +119,7 @@ class MusicController extends BasicController {
     async TrackerStream(request, response) {
         const { filePath, magnet } = request.query;
         const filePathTorr = filePath.split(' || ').join('\\');
-        const filePathTorrLinux = filePath.split(' || ').join('\\');
+        const filePathTorrLinux = filePath.split(' || ').join('/');
         console.log(filePathTorr);
         const track = await new Promise((resolve) => {
             const engine = torrentStream(magnet);
