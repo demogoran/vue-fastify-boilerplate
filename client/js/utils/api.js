@@ -19,7 +19,9 @@ export const fetchJSON = async (url, method = "GET", body, o = {}) => {
 
 
     return await fetch(url, data)
-        .then(x => x.json())
+        .then(x => !data.binary
+            ? x.json()
+            : x.blob())
         .then(x => {
             if (x.setJWTToken) {
                 localStorage.setItem('jwtToken', x.setJWTToken);
@@ -38,7 +40,8 @@ export const API = {
 
     musicGetInfo: async (data) => fetchJSON("/api/music/trackinfo", "post", data),
     musicSearch: async (data) => fetchJSON("/api/music/search", "post", data),
-
+    musicTrackerTracks: async (data) => fetchJSON("/api/music/trackerFiles", "post", data),
+    musicTrackerDownload: async (data) => fetchJSON("/api/music/trackerBatchDownload", "post", data, { binary: true }),
 
     serialsSearch: async (data) => fetchJSON("/api/serials/search", "post", data),
     serialsGetSeasons: async (data) => fetchJSON(`/api/serials/seasons${data.url}`, "get"),

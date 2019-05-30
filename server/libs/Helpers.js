@@ -55,3 +55,24 @@ export const ResultToKinds = (result) => {
 
     return kinds;
 }
+
+export const getTrackerMP3List = ($, $elem, magnet) => {
+    const result = Array.from($elem.find('b:contains(.mp3)')).map((x,i)=>{
+        const title = $(x).text();
+        let $dir = $(x).parents('.dir');
+        const pathParts = Array.from($dir).map(x=>$(x).find('>div b').text().replace('./', '')).reverse();
+        pathParts.push(title);
+
+        const resultPath = pathParts.join(' || ');
+        return {
+            id: `${Date.now()}${i}`,
+            permalink_url: `/api/music/trackerStream?filePath=${resultPath}&magnet=${magnet}`,
+            shortname: title,
+            title: resultPath,
+            isTracker: true,
+            magnet,
+        };
+    });
+
+    return result;
+}

@@ -8,7 +8,7 @@
     "push": "git add . && git commit -m \"updates\" && git push -u origin dev",
     "build": "webpack --mode production --config webpack.prod.config.js --optimize-minimize --define process.env.NODE_ENV=\"'production'\"",
     "pack": "webpack --mode development --config webpack.config.js",
-    "serv": "nodemon --watch server --watch app.js --exec babel-node app.js",
+    "serv": "babel-watch app.js",
     "dev": "concurrently \"npm run pack\" \"npm run serv\"",
     "testBabel": "node babel-custom-module/babel-string-collect/transform.js"
   },
@@ -35,8 +35,11 @@
     "querystring": "^0.2.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
+    "rutracker-api-2": "^1.10.0",
+    "torrent-stream": "^1.1.0",
     "vue": "^2.6.10",
     "vue-router": "^3.0.6",
+    "vue-server-renderer": "^2.6.10",
     "vuex": "^3.1.0",
     "vuex-i18n": "^1.11.0"
   },
@@ -56,6 +59,7 @@
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
     "babel-plugin-macros": "^2.5.1",
+    "babel-watch": "^7.0.0",
     "clean-webpack-plugin": "^2.0.1",
     "concurrently": "^4.1.0",
     "css-loader": "^2.1.1",

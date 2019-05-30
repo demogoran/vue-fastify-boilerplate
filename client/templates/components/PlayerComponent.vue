@@ -154,12 +154,17 @@ export default {
       if (Number.isInteger(currentIndex)) {
         try {
           const item = this.globalState.audioInfo?.Tracks[currentIndex];
-          const response = await API.musicGetInfo({
-            ids: [item.id]
-          });
-          const trackData = response.result[0];
-          this.playerInfo.title = trackData.name;
-          this.playerInfo.currentTrack = trackData.url;
+          let trackData;
+          if(!item.isTracker){
+            const response = await API.musicGetInfo({
+              ids: [item.id]
+            });
+            trackData = response.result[0];
+          }
+          else{
+            this.playerInfo.title = item.shortname;
+            this.playerInfo.currentTrack = item.permalink_url;
+          }
 
           if ("mediaSession" in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({

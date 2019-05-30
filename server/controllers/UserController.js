@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 
 import BasicController from '../libs/BasicController';
 import { User } from '../libs/ModelsLoader';
+import { USERROLES } from '../enums/Enums';
 import LOCALES from '../libs/Localization';
 
 
@@ -35,7 +36,7 @@ class UserController extends BasicController {
         if (!isValid) throw LOCALES.USER_INVALID_PASSWORD;
         return {
             setJWTToken: this.fastify.jwt.sign({
-                login: currentUser.login
+                id: currentUser._id
             })
         };
     }
@@ -51,6 +52,7 @@ class UserController extends BasicController {
         const hash = await bcrypt.hash(data.password, 10);
         await User.create({
             login: data.login,
+            role: USERROLES.DEFAULT,
             hash
         });
         return {};

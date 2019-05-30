@@ -9,6 +9,7 @@
       <b-input type="search" icon="magnify" v-model="searchStr"></b-input>
       <p class="control">
         <button class="button is-primary" variant="info" @click="search()">{{ ('Search') }}</button>
+        <button class="button is-primary" variant="info" @click="searchTracker()">{{ ('Search tracker') }}</button>
       </p>
     </b-field>
     <p class="control">
@@ -139,13 +140,49 @@ export default {
         Playlists: kinds.playlist.sort(sortByImage)
       };
     },
+
+    async searchTracker() {
+      const response = await API.musicSearch({
+        q: this.searchStr,
+        type: 'tracker',
+        socketToken: this.socketToken
+      });
+      const kinds = response?.result;
+      if (response.error || !kinds) {
+        console.log(response.errorMessage);
+        return;
+      }
+      this.audioInfo = {
+        Tracks: kinds.track.sort(sortByImage),
+        People: kinds.user.sort(sortByImage),
+        Playlists: kinds.playlist.sort(sortByImage)
+      };
+      this.activeTab = 0;
+    },
+
     async loadPlaylist(item){
       console.log(item);
-      this.audioInfo.Tracks = item.tracks;
+      if(item.type!=='tracker'){
+        this.audioInfo.Tracks = item.tracks;
+        return;
+      }
+
+      const response = await API.musicTrackerTracks({
+        id: item.id,
+      });
+
+      console.log(response.result);
+      this.audioInfo = {
+        Tracks: response.result,
+        People: this.audioInfo.People,
+        Playlists: this.audioInfo.Playlists
+      };
     },
+
     async setCurrent(item, contentTabKey) {
       if(contentTabKey==='Playlists'){
         this.loadPlaylist(item);
+        return;
       }
       if(contentTabKey!=='Tracks') return;
       const id = item.id;
@@ -153,24 +190,38 @@ export default {
 
       this.globalState.currentIndex = this.audioInfo.Tracks.findIndex(x=>x.id===item.id);
     },
+
     async download(){
-      const ids = this.checkedRows.map(x=>x.id);
-      const response = await API.musicGetInfo({ids});
+      const isTracker = this.checkedRows[0]?.isTracker;
+      let fileUrls = [];
+      if(!isTracker){
+        const ids = this.checkedRows.map(x=>x.id);
+        const response = await API.musicGetInfo({ids});
+        fileUrls = response.result;
+      }
+      else{
+        const magnet = this.checkedRows[0].magnet;
+        const zipBlob = await API.musicTrackerDownload({
+          fileList: this.checkedRows.map(x=>({
+            name: x.shortname,
+            path: x.title
+          })),
+          magnet
+        });
 
-      const promises = response.result.map(async x=>{
-        const binary = await fetch(x.url).then(x=>x.arrayBuffer());
-        zip.file(`${x.name}.mp3`, binary);
-      })
-      await Promise.all(promises);
-
-      const fileResult = await zip.generateAsync({
-          type: "blob"
-      });
-      window.location.href = URL.createObjectURL(fileResult);
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(zipBlob);
+        link.download = "result.zip";
+        link.click();
+        link.remove();
+        return;
+      }
     },
+
     imgFallback(event) {
       event.target.src = "img/notfound.jfif";
     },
+
     toggle(row) {
       this.$refs.table.toggleDetails(row);
     }

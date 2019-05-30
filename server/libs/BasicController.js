@@ -1,10 +1,21 @@
 import fs from 'fs';
 import LOCALES from './Localization';
+import { User } from '../libs/ModelsLoader';
 
 class BasicController {
     constructor() {
         const ERROR = { error: true };
         const SUCCESS = { error: false };
+
+        const sendErrorBack = (response, errorMessage = '', options = {}) => {
+            response.code(500);
+            return {
+                error: true,
+                errorMessage,
+                ...options,
+            }
+        }
+
         const currentProxy = new Proxy(this, {
             get: (obj, prop) => {
                 if (typeof obj[prop] !== 'function')
@@ -12,21 +23,56 @@ class BasicController {
 
                 return async (request, response, next) => {
                     if (!request || !response) {
-                        return {
-                            error: true
-                        }
+                        return sendErrorBack(response);
                     }
                     try {
+                        const token = request.headers ?.authorization ?.replace("Bearer ", "");
+                        if (token) {
+                            const decodedToken = this.fastify.jwt.decode(token);
+                            const user = await User.findOne({ _id: decodedToken.id }, 'login role _id');
+                            console.log(user, this.allowedMethods[`${obj.constructor.name}.${prop}`]);
+                            if (!user) {
+                                return sendErrorBack(response, LOCALES.UNAUTHORIZED, {
+                                    resetJWTToken: true,
+                                });
+                            }
+
+                            if (Object.keys(this.allowedMethods[`${obj.constructor.name}.${prop}`] || false).length) {
+                                const methodLimits = this.allowedMethods[`${obj.constructor.name}.${prop}`];
+                                if (methodLimits ?.disallowed) {
+                                    if (methodLimits ?.disallowed.indexOf(user.role) > -1) {
+                                        console.log('Disallowed limits');
+                                        return sendErrorBack(response);
+                                    }
+                                }
+                                else if (methodLimits ?.allowed) {
+                                    if (methodLimits ?.allowed.indexOf(user.role) === -1) {
+                                        console.log('Allowed limits');
+                                        return sendErrorBack(response);
+                                    }
+                                }
+                                else {
+                                    console.log(user.role, methodLimits ?.min, methodLimits ?.max);
+                                    if (methodLimits ?.min && user.role < methodLimits ?.min) {
+                                        console.log('Min limits');
+                                        return sendErrorBack(response);
+                                    }
+                                    if (methodLimits ?.max && user.role > methodLimits ?.max) {
+                                        console.log('Max limits');
+                                        return sendErrorBack(response);
+                                    }
+                                }
+                            }
+                        }
+
+                        console.log(this.allowedMethods, `${obj.constructor.name}.${prop}`, this.allowedMethods[`${obj.constructor.name}.${prop}`]);
                         if (!this.allowedMethods[`${obj.constructor.name}.${prop}`])
                             await request.jwtVerify();
                     } catch (err) {
                         console.log('Verification error', err);
-                        response.code(500);
-                        return {
-                            error: true,
+                        return sendErrorBack(response, LOCALES.UNAUTHORIZED, {
                             resetJWTToken: true,
-                            errorMessage: LOCALES.UNAUTHORIZED
-                        };
+                        });
                     }
                     try {
                         const result = await obj[prop].apply(obj, [request, response, next]);
