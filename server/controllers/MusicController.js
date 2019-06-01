@@ -121,8 +121,8 @@ class MusicController extends BasicController {
         const filePathTorr = filePath.split(' || ').join('\\');
         const filePathTorrLinux = filePath.split(' || ').join('/');
         console.log(filePathTorr);
+        const engine = torrentStream(magnet);
         const track = await new Promise((resolve) => {
-            const engine = torrentStream(magnet);
             engine.on('ready', () => {
                 resolve(engine.files.find(x => {
                     //console.log(x.path, filePathTorr, x.path === filePathTorr);
@@ -154,7 +154,12 @@ class MusicController extends BasicController {
                 .header('Accept-Ranges', 'bytes')
                 .header('Content-Length', chunksize)
                 .header('Content-Type', 'audio/mpeg')
-                .send(track.createReadStream({ start, end }));
+                .send(track
+                    .createReadStream({ start, end })
+                    .on('end', () => {
+                        console.log('Downloaded');
+                        engine.destroy();
+                    }));
         } else {
             response
                 .header('Content-Type', 'audio/mpeg')
