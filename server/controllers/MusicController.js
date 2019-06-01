@@ -125,7 +125,6 @@ class MusicController extends BasicController {
         const track = await new Promise((resolve) => {
             engine.on('ready', () => {
                 resolve(engine.files.find(x => {
-                    //console.log(x.path, filePathTorr, x.path === filePathTorr);
                     return x.path === filePathTorr
                         || x.path === filePathTorrLinux;
                 }));
